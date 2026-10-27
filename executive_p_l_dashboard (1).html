@@ -1,0 +1,1569 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>เป่าเป้ยเปา กรุ๊ป · Executive P&amp;L &amp; Strategy Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F5F8;--card:#ffffff;--ink:#0F1B2D;--mut:#566478;--line:#E3E8EE;
+  --pri:#0F766E;--cost:#C2410C;--net:#3730A3;--opx:#475569;--hq:#D97706;--cm:#0284C7;
+  --warn:#FEF3C7;--warnt:#78350F;--ok:#D1FAE5;--okt:#065F46;--bad:#FEE2E2;--badt:#991B1B;
+  color-scheme:light;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1220;--card:#121B2E;--ink:#E6ECF5;--mut:#9AA8BC;--line:#243148;
+    --pri:#2DD4BF;--cost:#FB923C;--net:#A5B4FC;--opx:#94A3B8;--hq:#FBBF24;--cm:#38BDF8;
+    --warn:#3B2F0B;--warnt:#FCD34D;--ok:#064E3B;--okt:#6EE7B7;--bad:#450A0A;--badt:#FCA5A5;
+    color-scheme:dark
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B1220;--card:#121B2E;--ink:#E6ECF5;--mut:#9AA8BC;--line:#243148;
+  --pri:#2DD4BF;--cost:#FB923C;--net:#A5B4FC;--opx:#94A3B8;--hq:#FBBF24;--cm:#38BDF8;
+  --warn:#3B2F0B;--warnt:#FCD34D;--ok:#064E3B;--okt:#6EE7B7;--bad:#450A0A;--badt:#FCA5A5;
+  color-scheme:dark
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans Thai',sans-serif;font-size:14px;line-height:1.5}
+.wrap{max-width:1420px;margin:0 auto;padding:20px 24px 64px;display:flex;flex-direction:column;gap:18px}
+h1{margin:0;font-size:22px;font-weight:700}
+h2{margin:0;font-size:16px;font-weight:700}
+h3{margin:0;font-size:14px;font-weight:600}
+.mut{color:var(--mut);font-size:12.5px}
+.grow{flex:1}
+.top,.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.logo{width:44px;height:44px;border-radius:12px;background:var(--pri);color:#fff;display:grid;place-items:center;font-weight:700;font-size:20px;box-shadow:0 4px 12px rgba(15,118,110,.25)}
+.tag{font-size:12px;background:var(--warn);color:var(--warnt);border-radius:6px;padding:4px 10px;font-weight:600}
+.tag.live{background:var(--ok);color:var(--okt)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;min-width:0;box-shadow:0 1px 3px rgba(0,0,0,.02)}
+.btn,.chip,select,input[type=number],input[type=search],input[type=date],input[type=text]{
+  border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;
+  padding:0 12px;min-height:38px;font:inherit;font-size:13px;transition:all .15s ease
+}
+.btn,.chip{cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-weight:500}
+.btn:hover,.chip:hover{border-color:var(--mut)}
+.btn.pri{background:var(--pri);color:#fff;border-color:var(--pri);font-weight:600}
+.chip{border-radius:999px;padding:0 14px;min-height:34px}
+.chip.on{background:var(--ink);color:var(--card);border-color:var(--ink);font-weight:600}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--net);outline-offset:2px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:4px;flex-shrink:0}
+.fl{display:flex;flex-direction:column;gap:12px}
+.fl .row{gap:8px}
+.lb{width:115px;font-weight:600;font-size:13px;color:var(--ink);flex-shrink:0}
+.g5{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:16px}
+.g21{display:grid;grid-template-columns:1.85fr 1.15fr;gap:16px}
+@media(max-width:960px){.g21{grid-template-columns:1fr}.lb{width:100%}}
+.lbl{font-size:11.5px;letter-spacing:.03em;color:var(--mut);font-weight:600;text-transform:uppercase}
+.kv{display:flex;justify-content:space-between;align-items:baseline;margin:8px 0 4px;gap:8px}
+.kv b{font-size:26px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.dl{font-weight:600;font-size:12px}
+.up{color:var(--pri)}.dn{color:var(--cost)}
+.head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.sc{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11.5px;color:var(--mut);padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap;font-weight:600}
+th button{all:unset;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:3px}
+td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:hover td{background:color-mix(in srgb,var(--line) 35%,transparent)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.stack{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--line);min-width:80px}
+.stack i{display:block;height:100%;transition:width .25s ease}
+.pill{padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;background:var(--warn);color:var(--warnt);white-space:nowrap}
+.pill.ok{background:var(--ok);color:var(--okt)}
+.pill.bad{background:var(--bad);color:var(--badt)}
+.sec{display:flex;align-items:center;gap:12px;margin-top:8px}
+.sec h2{font-size:19px}
+.sec hr{flex:1;border:0;border-top:1px solid var(--line)}
+.hm{display:grid;gap:4px;font-size:12px;align-items:center;min-width:680px}
+.hm em{font-style:normal;text-align:center;color:var(--mut);font-size:11px;font-weight:600}
+.hm span{text-align:center;padding:8px 2px;border-radius:6px;font-weight:600;font-variant-numeric:tabular-nums;cursor:default}
+.ins{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:14px}
+.ins .card{display:flex;flex-direction:column;justify-content:space-between;border-left:4px solid var(--pri)}
+.ins .card b{display:block;margin-bottom:4px;font-size:14.5px}
+.act{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);color:var(--pri);font-weight:600;font-size:12.5px}
+.prog{height:9px;background:var(--line);border-radius:6px;overflow:hidden;margin:6px 0 4px}
+.prog i{display:block;height:100%;background:var(--net);transition:width .25s ease}
+.t{fill:var(--mut);font-size:11px}
+.tb{fill:var(--ink);font-weight:700;font-size:12px}
+.leg{display:flex;flex-direction:column;gap:7px;width:100%}
+.leg div{display:flex;align-items:center;gap:6px;font-size:13px}
+#tip{position:fixed;z-index:99;background:var(--ink);color:var(--card);padding:9px 12px;border-radius:10px;font-size:12px;line-height:1.5;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.22);max-width:290px}
+#tip[hidden]{display:none}
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(11,18,32,.65);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
+.modal-bg[hidden]{display:none}
+.modal{background:var(--card);border:1px solid var(--line);border-radius:18px;max-width:760px;width:100%;max-height:88vh;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:14px}
+pre.code{background:var(--bg);padding:12px;border-radius:10px;border:1px solid var(--line);overflow-x:auto;font-size:12px;line-height:1.45;margin:0}
+input[type=range]{accent-color:var(--pri);width:100%}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- Top Bar -->
+  <div class="top">
+    <div class="logo">เป</div>
+    <div>
+      <h1>เป่าเป้ยเปา กรุ๊ป · Executive P&amp;L &amp; Strategy Dashboard</h1>
+      <div class="mut">วิเคราะห์งบกำไรขาดทุน 7 ขั้นตอน (Baobei · Skyluck · Lalilla · Seng Hong · HQ) แยกรายวัน/สัปดาห์/เดือน เพื่อวางกลยุทธ์ปีถัดไป</div>
+    </div>
+    <span class="grow"></span>
+    <span id="data-badge" class="tag">โหมดข้อมูลจำลองตามโครงสร้าง PaobeiPao_Master_PL</span>
+    <button class="btn pri" data-a="open-sync">🔗 เชื่อมต่อ Google Sheet / CSV</button>
+    <button class="btn" data-a="th">🌓 สลับโหมดสว่าง/มืด</button>
+  </div>
+
+  <!-- Multi-Dimensional Filter Card -->
+  <div class="card fl">
+    <!-- Row 1: Time Granularity & Date Range -->
+    <div class="row">
+      <span class="lb">📅 มุมมองเวลา</span>
+      <div class="row" id="f-gran" style="gap:6px">
+        <button class="chip on" data-a="gran" data-v="month">รายเดือน (Monthly)</button>
+        <button class="chip" data-a="gran" data-v="week">รายสัปดาห์ (Weekly)</button>
+        <button class="chip" data-a="gran" data-v="day">รายวัน (Daily)</button>
+      </div>
+      <span class="mut" style="margin-left:6px">ตั้งแต่วันที่</span>
+      <input type="date" id="d-from" aria-label="วันเริ่มต้น">
+      <span class="mut">ถึง</span>
+      <input type="date" id="d-to" aria-label="วันสิ้นสุด">
+      <div class="row" style="gap:4px">
+        <button class="btn" data-a="pre" data-v="all">ทั้งปี (พ.ย.25–ต.ค.26)</button>
+        <button class="btn" data-a="pre" data-v="q4">Q4 (ส.ค.–ต.ค.26)</button>
+        <button class="btn" data-a="pre" data-v="m10">ต.ค. 2026</button>
+      </div>
+      <label class="row mut" style="margin-left:auto;cursor:pointer">
+        <input type="checkbox" id="cmp" checked> เทียบปีก่อน (YoY)
+      </label>
+    </div>
+
+    <!-- Row 2: Brand Filter -->
+    <div class="row">
+      <span class="lb">🏷️ แบรนด์ (Brand)</span>
+      <span id="f-brand" class="row" style="gap:6px"></span>
+      <button class="btn" data-a="ba">เลือกทุกแบรนด์</button>
+    </div>
+
+    <!-- Row 3: Business Model Filter -->
+    <div class="row">
+      <span class="lb">📦 โมเดลธุรกิจ</span>
+      <span id="f-model" class="row" style="gap:6px"></span>
+      <button class="btn" data-a="ma">เลือกทุกโมเดล</button>
+    </div>
+
+    <!-- Row 4: Dynamic Sublocation Filter -->
+    <div class="row" style="align-items:flex-start">
+      <span class="lb" style="padding-top:6px">📍 Sublocation</span>
+      <span id="f-sub" class="row" style="gap:6px;flex:1"></span>
+      <span class="row" style="gap:6px">
+        <button class="btn" data-a="sa">เลือกทั้งหมด</button>
+        <button class="btn" data-a="sn">ล้าง</button>
+      </span>
+    </div>
+  </div>
+
+  <!-- 5 Executive KPI Cards (Matching Summary_PL 7-Tier Structure) -->
+  <div id="kp" class="g5"></div>
+
+  <!-- Main Trend Chart + Multi-Model/Brand Donut -->
+  <div class="g21">
+    <div class="card">
+      <div class="head">
+        <h2 id="tr-title">แนวโน้มรายเดือน: รายรับ vs ต้นทุนรวม และ Net Margin (%)</h2>
+        <span class="mut">
+          <i class="dot" style="background:var(--pri)"></i>รายรับ
+          <i class="dot" style="background:var(--cost);margin-left:8px"></i>COGS+Direct+HQ
+          <i class="dot" style="background:var(--net);margin-left:8px"></i>Net Margin %
+        </span>
+      </div>
+      <div id="tr"></div>
+    </div>
+    <div class="card">
+      <div class="head">
+        <h2>เปรียบเทียบสัดส่วน Revenue &amp; Margin</h2>
+        <div class="row" style="gap:4px">
+          <button class="chip on" id="dn-m" data-a="dn-mode" data-v="model" style="min-height:28px;padding:0 10px;font-size:12px">ตามโมเดล</button>
+          <button class="chip" id="dn-b" data-a="dn-mode" data-v="brand" style="min-height:28px;padding:0 10px;font-size:12px">ตามแบรนด์</button>
+        </div>
+      </div>
+      <div id="dn" class="fl" style="align-items:center"></div>
+    </div>
+  </div>
+
+  <!-- Executive P&L Waterfall (7 Steps) + 11 Expense Categories Breakdown -->
+  <div class="g2">
+    <div class="card">
+      <div class="head">
+        <h2>โครงสร้างงบกำไรขาดทุน 7 ขั้น (Executive P&amp;L Waterfall)</h2>
+        <span class="mut">ตรงตามชีท Summary_PL (Gross ➔ Contribution ➔ Net)</span>
+      </div>
+      <div id="wf"></div>
+    </div>
+    <div class="card">
+      <div class="head">
+        <h2>โครงสร้างต้นทุน 11 หมวดหมู่ (Cost Type &amp; Expense Breakdown)</h2>
+        <span class="mut">แยกตาม COGS · Direct Expense · Fixed Overhead</span>
+      </div>
+      <div id="cc"></div>
+    </div>
+  </div>
+
+  <!-- Model & Brand Comparison Matrix Cards -->
+  <div class="card">
+    <div class="head">
+      <h2>สรุปเปรียบเทียบแต่ละ Business Model (Revenue · COGS · Direct Exp · Contribution Margin)</h2>
+      <span class="mut">ช่วยตัดสินใจว่าปีหน้าควรเพิ่มน้ำหนักการลงทุนในโมเดลใด</span>
+    </div>
+    <div id="mc" class="g4"></div>
+  </div>
+
+  <!-- Sublocation Performance Table -->
+  <div class="card">
+    <div class="head">
+      <h2>ตารางวิเคราะห์ผลงานรายสาขา / อีเวนต์ / Sublocation (คลิกหัวตารางเพื่อเรียงลำดับ)</h2>
+      <span class="mut">แสดงครบทั้ง Gross Profit, Direct Expense, Contribution Margin และกำไรสุทธิหลังปันส่วน HQ</span>
+    </div>
+    <div class="sc" id="sb"></div>
+  </div>
+
+  <!-- Dedicated Event_Master & GP% ROI Table -->
+  <div class="card">
+    <div class="head">
+      <h2>🎪 วิเคราะห์เจาะลึกงานอีเวนต์ &amp; คอมมิชชั่นห้าง (Event_Master GP% &amp; ROI Analyzer)</h2>
+      <span class="mut">ประเมินความคุ้มค่าของค่า GP ห้าง (20%–30%) เทียบกับยอดขายต่อวันและกำไรส่วนสนับสนุน</span>
+    </div>
+    <div class="sc" id="ev-tbl"></div>
+  </div>
+
+  <!-- Strategic Planning Section Header -->
+  <div class="sec">
+    <h2>🧭 ข้อมูลสำคัญสำหรับการวางกลยุทธ์และจำลองเป้าหมายปีถัดไป (Strategy &amp; What-If Simulation)</h2>
+    <hr>
+  </div>
+
+  <!-- Heatmap -->
+  <div class="card">
+    <div class="head">
+      <h2>Heatmap: Contribution Margin (%) รายเดือน × Sublocation</h2>
+      <span class="mut">สีเข้ม = กำไรส่วนสนับสนุนสูง · ใช้ดู Seasonality เพื่อวางแผนจัด Event และสต๊อกวัตถุดิบ</span>
+    </div>
+    <div class="sc" id="hm"></div>
+  </div>
+
+  <!-- Portfolio Matrix + Cost Ratio Trend -->
+  <div class="g2">
+    <div class="card">
+      <div class="head">
+        <h2>Portfolio &amp; Menu Engineering Matrix (ยอดขาย vs อัตรากำไร)</h2>
+        <span class="mut">สลับดูรายสินค้าซาลาเปา/ติ่มซำ หรือดูราย Sublocation เพื่อคัด Star / Dog</span>
+        <div class="row" style="gap:4px">
+          <button class="chip on" id="me-p" data-a="me-mode" data-v="prod" style="min-height:28px;padding:0 10px;font-size:12px">รายเมนูสินค้า</button>
+          <button class="chip" id="me-s" data-a="me-mode" data-v="sub" style="min-height:28px;padding:0 10px;font-size:12px">ราย Sublocation</button>
+        </div>
+      </div>
+      <div id="me"></div>
+    </div>
+    <div class="card">
+      <div class="head">
+        <h2>สัดส่วนต้นทุนต่อรายรับ (% of Revenue) เทียบเกณฑ์เป้าหมาย</h2>
+        <span class="mut">
+          <i class="dot" style="background:var(--cost)"></i>COGS %
+          <i class="dot" style="background:var(--opx);margin-left:8px"></i>Direct Exp %
+          <i class="dot" style="background:var(--hq);margin-left:8px"></i>Fixed Overhead %
+        </span>
+      </div>
+      <div id="cr"></div>
+    </div>
+  </div>
+
+  <!-- Target Setting + What-If Simulator + Break-Even -->
+  <div class="g2">
+    <div class="card fl">
+      <div class="head" style="margin-bottom:4px">
+        <h2>🎯 ตั้งเป้าหมายปีถัดไป &amp; จำลองสถานการณ์ (What-If Strategy Simulator)</h2>
+        <button class="btn" data-a="reset-sim" style="min-height:28px;font-size:12px">รีเซ็ตค่าจำลอง</button>
+      </div>
+      <div class="row">
+        <label class="mut" style="flex:1">เป้ารายรับรวม/ปี (฿)<br><input type="number" id="tr_" value="12000000" step="500000" style="width:100%"></label>
+        <label class="mut" style="flex:1">เป้า Net Margin (%)<br><input type="number" id="tm" value="22" step="1" style="width:100%"></label>
+        <label class="mut" style="flex:1">เพดาน COGS (%)<br><input type="number" id="tc" value="35" step="1" style="width:100%"></label>
+      </div>
+      <div style="background:var(--bg);padding:12px 14px;border-radius:12px;border:1px solid var(--line)" class="fl">
+        <div class="lbl">ทดลองปรับกลยุทธ์ปีหน้า (What-If Sliders)</div>
+        <div class="row">
+          <span style="width:180px;font-size:12.5px">ปรับราคาขาย / เพิ่ม Volume: <b id="lbl-sim-p">+0%</b></span>
+          <input type="range" id="sim-p" min="-10" max="25" value="0" step="1" style="flex:1">
+        </div>
+        <div class="row">
+          <span style="width:180px;font-size:12.5px">ลดต้นทุนวัตถุดิบ (COGS): <b id="lbl-sim-c">0.0 pt</b></span>
+          <input type="range" id="sim-c" min="-5" max="8" value="0" step="0.5" style="flex:1">
+        </div>
+        <div class="row">
+          <span style="width:180px;font-size:12.5px">ลดค่าเช่า/GP ห้าง &amp; OpEx: <b id="lbl-sim-o">0%</b></span>
+          <input type="range" id="sim-o" min="-10" max="20" value="0" step="1" style="flex:1">
+        </div>
+      </div>
+      <div id="tg"></div>
+    </div>
+
+    <div class="card fl">
+      <h2>⚖️ วิเคราะห์จุดคุ้มทุน &amp; ส่วนเผื่อความปลอดภัย (Break-even &amp; Safety Margin)</h2>
+      <div id="be"></div>
+    </div>
+  </div>
+
+  <!-- Strategic Insights Reflection Cards -->
+  <div class="sec">
+    <h2>💡 สรุปข้อค้นพบและแนวทางกลยุทธ์อัตโนมัติ (Strategic Reflection &amp; Action Plan)</h2>
+    <hr>
+  </div>
+  <div id="in" class="ins"></div>
+
+  <!-- Transactions Drill-Down Table -->
+  <div class="card">
+    <div class="head">
+      <h2>📋 รายการเคลื่อนไหวรายบรรทัด (Transactions Drill-Down)</h2>
+      <span class="row">
+        <input type="search" id="q" placeholder="ค้นหาสาขา, อีเวนต์, หมวดหมู่, หมายเหตุ..." aria-label="ค้นหา" style="min-width:240px">
+        <select id="ty" aria-label="ประเภทต้นทุน">
+          <option value="">ทุกประเภท (Type / Cost_Type)</option>
+          <option value="Revenue">รายรับ (Revenue)</option>
+          <option value="COGS">ต้นทุนวัตถุดิบ (COGS)</option>
+          <option value="Direct Expense">ค่าใช้จ่ายทางตรง (Direct Expense)</option>
+          <option value="Fixed Overhead">ค่าใช้จ่ายส่วนกลาง (Fixed Overhead)</option>
+        </select>
+        <button class="btn" data-a="export-csv">⬇️ Export CSV</button>
+      </span>
+    </div>
+    <div class="sc" id="tx"></div>
+  </div>
+</div>
+
+<!-- Floating Tooltip -->
+<div id="tip" hidden></div>
+
+<!-- Modal for Google Sheets API & CSV Upload -->
+<div id="sync-modal" class="modal-bg" hidden>
+  <div class="modal">
+    <div class="head" style="margin:0">
+      <h2>🔗 เชื่อมต่อข้อมูลจริงจากไฟล์ Google Sheets (PaobeiPao_Master_PL)</h2>
+      <button class="btn" data-a="close-sync">✕ ปิด</button>
+    </div>
+    <p class="mut" style="margin:0">
+      คุณสามารถเชื่อมต่อข้อมูลเข้ากับหน้า Dashboard นี้ได้ 2 วิธี: <b>(1) วาง Web App URL จาก Google Apps Script</b> เพื่อดึงข้อมูลออนไลน์อัตโนมัติ หรือ <b>(2) อัปโหลดไฟล์ CSV (`PaobeiPao_Master_PL_Transactions.csv`)</b> จากเครื่องของคุณเพื่อวิเคราะห์ทันที
+    </p>
+
+    <div class="card fl" style="background:var(--bg)">
+      <h3>วิธีที่ 1: เชื่อมต่อผ่าน Google Apps Script Web App URL (Real-time)</h3>
+      <div class="row">
+        <input type="text" id="gas-url" placeholder="https://script.google.com/macros/s/XXXX/exec" style="flex:1">
+        <button class="btn pri" data-a="save-gas">ดึงข้อมูลจาก Google Sheet</button>
+        <button class="btn" data-a="reset-demo">ใช้ข้อมูลจำลอง</button>
+      </div>
+      <div id="gas-status" class="mut"></div>
+    </div>
+
+    <div class="card fl" style="background:var(--bg)">
+      <h3>วิธีที่ 2: อัปโหลดไฟล์ CSV จาก Google Sheets ของคุณโดยตรง</h3>
+      <div class="row">
+        <label class=" mut">ไฟล์ชีท <b>Transactions.csv</b>: <input type="file" id="csv-tx" accept=".csv"></label>
+      </div>
+    </div>
+
+    <div class="fl">
+      <div class="row" style="justify-content:space-between">
+        <h3>📋 โค้ด Google Apps Script สำหรับใส่ในไฟล์ PaobeiPao_Master_PL</h3>
+        <button class="btn" data-a="copy-gas">คัดลอกโค้ด Apps Script</button>
+      </div>
+      <pre class="code" id="gas-code">function doGet(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var txSheet = ss.getSheetByName("Transactions");
+  var evSheet = ss.getSheetByName("Event_Master");
+  
+  var txRows = txSheet ? txSheet.getDataRange().getValues() : [];
+  var evRows = evSheet ? evSheet.getDataRange().getValues() : [];
+  
+  var transactions = [];
+  for (var i = 1; i &lt; txRows.length; i++) {
+    var r = txRows[i];
+    if (!r[0] || !r[7]) continue;
+    var d = r[0] instanceof Date ? Utilities.formatDate(r[0], "GMT+7", "yyyy-MM-dd") : String(r[0]).slice(0,10);
+    transactions.push({
+      date: d,
+      brand: String(r[1] || "Baobei").trim(),
+      model: String(r[2] || "สาขา (Branch)").trim(),
+      subLoc: String(r[3] || "").trim(),
+      type: String(r[4] || "").trim(),      // Revenue / Expense
+      costType: String(r[5] || "").trim(),  // COGS / Direct Expense / Fixed Overhead
+      category: String(r[6] || "").trim(),
+      amount: Number(r[7]) || 0,
+      note: String(r[8] || "").trim(),
+      periodKey: String(r[9] || d.slice(0,7)).trim()
+    });
+  }
+  
+  var events = [];
+  for (var j = 1; j &lt; evRows.length; j++) {
+    var er = evRows[j];
+    if (!er[0]) continue;
+    events.push({
+      id: String(er[0]), name: String(er[1]), brand: String(er[2]),
+      location: String(er[3]),
+      start: er[4] instanceof Date ? Utilities.formatDate(er[4], "GMT+7", "yyyy-MM-dd") : String(er[4]),
+      end: er[5] instanceof Date ? Utilities.formatDate(er[5], "GMT+7", "yyyy-MM-dd") : String(er[5]),
+      gpPct: typeof er[6] === 'number' ? (er[6] &lt;= 1 ? er[6]*100 : er[6]) : parseFloat(String(er[6]).replace('%','')) || 0,
+      fixedRent: Number(er[7]) || 0,
+      status: String(er[8] || "Completed")
+    });
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "ok", transactions: transactions, events: events
+  })).setMimeType(ContentService.MimeType.JSON);
+}</pre>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================================
+// 1. MASTER CONFIGURATION (ตรงตาม PaobeiPao_Master_PL_MasterSetup.csv & Event_Master.csv)
+// ============================================================================
+const $=s=>document.querySelector(s),$$=s=>Array.from(document.querySelectorAll(s));
+const sum=(a,f)=>a.reduce((x,y)=>x+f(y),0);
+const th=n=>Math.round(n).toLocaleString('en-US');
+const pt=n=>(isFinite(n)?n:0).toFixed(1)+'%';
+const fm=n=>{
+  const s=n<0?'−':'',a=Math.abs(n);
+  if(a>=1e6)return s+'฿'+(a/1e6).toFixed(2)+'M';
+  if(a>=1e3)return s+'฿'+th(a/1e3)+'k';
+  return s+'฿'+th(a);
+};
+const fmFull=n=>(n<0?'−฿':'฿')+Math.round(Math.abs(n)).toLocaleString('en-US');
+const dl=(a,b)=>b?(a/b-1)*100:0;
+
+const MONTHS=['พ.ย. 25','ธ.ค. 25','ม.ค. 26','ก.พ. 26','มี.ค. 26','เม.ย. 26','พ.ค. 26','มิ.ย. 26','ก.ค. 26','ส.ค. 26','ก.ย. 26','ต.ค. 26'];
+const M_KEYS=['2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09','2026-10'];
+const M_DAYS=[30,31,31,28,31,30,31,30,31,31,30,31];
+
+const BRANDS=[
+  ['Baobei','Baobei (เป่าเป้ยเปา)','#0F766E'],
+  ['Skyluck','Skyluck (สกายลัค)','#3730A3'],
+  ['Lalilla','Lalilla (ลาลิลลา)','#C2410C'],
+  ['Seng Hong','Seng Hong (เซ่งฮง)','#0284C7'],
+  ['ส่วนกลาง (HQ)','ส่วนกลาง (HQ)','#D97706']
+];
+const BRAND_MAP=Object.fromEntries(BRANDS.map(b=>[b[0],b]));
+
+const MODELS=[
+  ['สาขา (Branch)','สาขา (Branch)','var(--pri)'],
+  ['Event','Event (ออกบูธห้าง)','var(--net)'],
+  ['Snack Box','Snack Box','var(--cost)'],
+  ['Catering','Catering (จัดเลี้ยง)','var(--cm)'],
+  ['ส่วนกลาง (HQ)','ส่วนกลาง (HQ)','var(--hq)']
+];
+const MODEL_MAP=Object.fromEntries(MODELS.map(m=>[m[0],m]));
+
+const SUBLOCS=[
+  {id:'mkp',n:'สาขาตลาดกัลปพฤกษ์ (MKP)',brand:'Baobei',m:'สาขา (Branch)',baseRev:245,cogs:.33,dir:.21,fix:28,yoy:.14},
+  {id:'bbb1',n:'สาขาเจริญนคร (BBB1)',brand:'Baobei',m:'สาขา (Branch)',baseRev:195,cogs:.34,dir:.22,fix:25,yoy:.11},
+  {id:'baibua',n:'สาขาตลาดใบบัว',brand:'Skyluck',m:'สาขา (Branch)',baseRev:155,cogs:.35,dir:.20,fix:20,yoy:.08},
+  {id:'sathorn',n:'สาขาสาทรซิตี้',brand:'Baobei',m:'สาขา (Branch)',baseRev:210,cogs:.32,dir:.24,fix:35,yoy:.16},
+  {id:'ev_bangkae',n:'Event The Mall บางแค',brand:'Skyluck',m:'Event',baseRev:140,cogs:.34,dir:.31,fix:6,yoy:.22,gp:26},
+  {id:'ev_thapra',n:'Event The Mall ท่าพระ',brand:'Baobei',m:'Event',baseRev:125,cogs:.33,dir:.29,fix:5,yoy:.18,gp:25},
+  {id:'ev_bangkapi',n:'Event The Mall บางกะปิ',brand:'Baobei',m:'Event',baseRev:130,cogs:.34,dir:.29,fix:5,yoy:.15,gp:25},
+  {id:'ev_eastville',n:'Event Central Eastville',brand:'Lalilla',m:'Event',baseRev:115,cogs:.35,dir:.30,fix:5,yoy:.19,gp:25},
+  {id:'ev_paragon',n:'Event Siam Paragon',brand:'Baobei',m:'Event',baseRev:220,cogs:.32,dir:.35,fix:8,yoy:.25,gp:30},
+  {id:'ev_lalilla',n:'Event Lalilla',brand:'Lalilla',m:'Event',baseRev:85,cogs:.36,dir:.26,fix:4,yoy:.12,gp:22},
+  {id:'ev_senghong',n:'Event Seng Hong',brand:'Seng Hong',m:'Event',baseRev:95,cogs:.33,dir:.24,fix:4,yoy:.14,gp:20},
+  {id:'sb_b2b',n:'Snack Box ลูกค้าองค์กร & โรงเรียน',brand:'Baobei',m:'Snack Box',baseRev:110,cogs:.36,dir:.16,fix:5,yoy:.20},
+  {id:'cat_vip',n:'Catering งานแต่ง & อีเวนต์องค์กร',brand:'Seng Hong',m:'Catering',baseRev:90,cogs:.31,dir:.18,fix:4,yoy:.17},
+  {id:'hq_bbb',n:'BBB-กลาง (ส่วนกลาง)',brand:'ส่วนกลาง (HQ)',m:'ส่วนกลาง (HQ)',baseRev:0,cogs:0,dir:0,fix:48,yoy:.04},
+  {id:'hq_sky',n:'Skyluck-กลาง (ส่วนกลาง)',brand:'ส่วนกลาง (HQ)',m:'ส่วนกลาง (HQ)',baseRev:0,cogs:0,dir:0,fix:26,yoy:.03}
+];
+
+const EVENT_MASTER_DEFAULT=[
+  {id:'EVT-2026-01',name:'Event The Mall บางแค (Skyluck)',brand:'Skyluck',subLoc:'Event The Mall บางแค',location:'The Mall บางแค',start:'2026-05-01',end:'2026-05-11',days:11,gpPct:26.0,fixedRent:0,status:'Completed'},
+  {id:'EVT-2026-02',name:'Event The Mall บางแค (Baobei)',brand:'Baobei',subLoc:'Event The Mall บางแค',location:'The Mall บางแค',start:'2025-12-01',end:'2026-01-15',days:46,gpPct:20.0,fixedRent:0,status:'Completed'},
+  {id:'EVT-2026-03',name:'Event The Mall ท่าพระ',brand:'Baobei',subLoc:'Event The Mall ท่าพระ',location:'The Mall ท่าพระ',start:'2026-09-01',end:'2026-09-15',days:15,gpPct:25.0,fixedRent:0,status:'Completed'},
+  {id:'EVT-2026-04',name:'Event Central Eastville',brand:'Lalilla',subLoc:'Event Central Eastville',location:'Central Eastville',start:'2026-09-20',end:'2026-10-05',days:16,gpPct:25.0,fixedRent:0,status:'Completed'},
+  {id:'EVT-2026-05',name:'Event Siam Paragon',brand:'Baobei',subLoc:'Event Siam Paragon',location:'Siam Paragon',start:'2026-10-07',end:'2026-10-20',days:14,gpPct:30.0,fixedRent:0,status:'Completed'}
+];
+
+// 11 Expense Categories from MasterSetup.csv
+const EXP_CATEGORIES=[
+  {cat:'ค่าวัตถุดิบและบรรจุภัณฑ์ (COGS)',costType:'COGS',share:1.0,color:'var(--cost)'},
+  {cat:'ค่าเช่าพื้นที่และสถานที่',costType:'Direct Expense',share:0.38,color:'var(--pri)'},
+  {cat:'ค่าจ้างพนักงานและ Part-time',costType:'Direct Expense',share:0.31,color:'var(--net)'},
+  {cat:'ค่าเชื้อเพลิงและก๊าซ (Gas/น้ำมัน)',costType:'Direct Expense',share:0.06,color:'#0284C7'},
+  {cat:'ค่าสาธารณูปโภค (น้ำ/ไฟ)',costType:'Direct Expense',share:0.06,color:'#64748B'},
+  {cat:'ค่าการตลาดและโฆษณา',costType:'Direct Expense',share:0.07,color:'#EC4899'},
+  {cat:'ค่าสื่อสิ่งพิมพ์และป้าย',costType:'Direct Expense',share:0.03,color:'#8B5CF6'},
+  {cat:'ค่าขนส่งและเดินทาง',costType:'Direct Expense',share:0.05,color:'#F59E0B'},
+  {cat:'ค่าอุปกรณ์และของใช้ในร้าน',costType:'Direct Expense',share:0.04,color:'#10B981'},
+  {cat:'ค่า Software & Infra & Tech',costType:'Fixed Overhead',share:0.58,color:'var(--hq)'},
+  {cat:'ค่าใช้จ่ายเบ็ดเตล็ดอื่นๆ',costType:'Fixed Overhead',share:0.42,color:'var(--opx)'}
+];
+
+// Seasonality curves per Business Model across 12 months (Nov 25 - Oct 26)
+const SEASON={
+  'สาขา (Branch)':[1.00,1.12,1.06,0.94,0.96,0.95,0.98,1.01,1.03,1.04,1.06,1.10],
+  'Event':[1.08,1.45,1.25,0.82,0.78,0.85,1.15,0.92,0.96,1.05,1.28,1.38],
+  'Snack Box':[1.05,1.18,0.96,1.04,0.82,0.68,0.88,1.02,1.08,1.12,1.16,1.14],
+  'Catering':[1.10,1.48,1.22,1.26,0.85,0.78,0.84,0.90,0.95,1.02,1.12,1.20],
+  'ส่วนกลาง (HQ)':[1,1,1,1,1,1,1,1,1,1,1,1]
+};
+
+// ============================================================================
+// 2. GENERATE REALISTIC TRANSACTION LOG (Or Replace with Live Google Sheet Data)
+// ============================================================================
+let seed=42;
+const rnd=()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+
+let RAW_TX=[];
+let EVENT_LIST=[...EVENT_MASTER_DEFAULT];
+
+function generateDemoTransactions(){
+  seed=42;
+  const txs=[];
+  M_KEYS.forEach((mKey,mIdx)=>{
+    const [yr,mo]=mKey.split('-').map(Number);
+    const daysInMo=M_DAYS[mIdx];
+    SUBLOCS.forEach(s=>{
+      const sea=SEASON[s.m][mIdx];
+      // Generate 4 weekly slices per month so Daily, Weekly, and Monthly filters all work seamlessly
+      const slices=[5,12,19,26];
+      slices.forEach((dayNum,wIdx)=>{
+        const dt=`${yr}-${String(mo).padStart(2,'0')}-${String(Math.min(dayNum,daysInMo)).padStart(2,'0')}`;
+        const wFactor=0.23+rnd()*0.04;
+        if(s.m==='ส่วนกลาง (HQ)'){
+          const hqAmt=Math.round(s.fix*1000*wFactor*(0.96+rnd()*0.08));
+          txs.push({
+            date:dt,periodKey:mKey,mIdx,brand:s.brand,model:s.m,subId:s.id,subLoc:s.n,
+            type:'Expense',costType:'Fixed Overhead',
+            category:wIdx%2===0?'ค่า Software & Infra & Tech':'ค่าใช้จ่ายเบ็ดเตล็ดอื่นๆ',
+            amount:hqAmt,prevAmount:Math.round(hqAmt/1.04),
+            note:'ค่าใช้จ่ายบริหารและระบบส่วนกลางประจำงวด'
+          });
+          return;
+        }
+        const rev=Math.round(s.baseRev*1000*sea*(1+0.01*mIdx)*wFactor*(0.93+rnd()*0.14));
+        const prevRev=Math.round(rev/(1+s.yoy)*(0.96+rnd()*0.08));
+        // 1. Revenue row
+        txs.push({
+          date:dt,periodKey:mKey,mIdx,brand:s.brand,model:s.m,subId:s.id,subLoc:s.n,
+          type:'Revenue',costType:'Revenue',category:'รายได้จากการขายหน้าร้าน / ออเดอร์',
+          amount:rev,prevAmount:prevRev,
+          note:s.m==='Event'?`ยอดขายออกบูธ (GP ${s.gp||25}%)`:`ยอดขายประจำสัปดาห์ที่ ${wIdx+1}`
+        });
+        // 2. COGS row
+        const cogsAmt=Math.round(rev*s.cogs*(0.97+rnd()*0.06));
+        const prevCogs=Math.round(prevRev*(s.cogs+0.008));
+        txs.push({
+          date:dt,periodKey:mKey,mIdx,brand:s.brand,model:s.m,subId:s.id,subLoc:s.n,
+          type:'Expense',costType:'COGS',category:'ค่าวัตถุดิบและบรรจุภัณฑ์ (COGS)',
+          amount:cogsAmt,prevAmount:prevCogs,
+          note:'ต้นทุนแป้ง ไส้ซาลาเปา ติ่มซำ และแพ็กเกจจิ้ง'
+        });
+        // 3. Direct Expense rows (Rent/GP, Staff, Utilities/Gas/Marketing/Transport)
+        const dirTotal=Math.round(rev*s.dir + (s.m==='สาขา (Branch)'?s.fix*1000*wFactor:0));
+        const prevDirTotal=Math.round(prevRev*s.dir + (s.m==='สาขา (Branch)'?s.fix*950*wFactor:0));
+        const rentShare=s.m==='Event'?0.56:0.38;
+        const staffShare=0.33;
+        const otherShare=1-rentShare-staffShare;
+        const otherCats=['ค่าเชื้อเพลิงและก๊าซ (Gas/น้ำมัน)','ค่าสาธารณูปโภค (น้ำ/ไฟ)','ค่าการตลาดและโฆษณา','ค่าขนส่งและเดินทาง','ค่าสื่อสิ่งพิมพ์และป้าย','ค่าอุปกรณ์และของใช้ในร้าน'];
+        const chosenOther=otherCats[(mIdx+wIdx)%otherCats.length];
+
+        txs.push({
+          date:dt,periodKey:mKey,mIdx,brand:s.brand,model:s.m,subId:s.id,subLoc:s.n,
+          type:'Expense',costType:'Direct Expense',category:'ค่าเช่าพื้นที่และสถานที่',
+          amount:Math.round(dirTotal*rentShare),prevAmount:Math.round(prevDirTotal*rentShare),
+          note:s.m==='Event'?`ค่า GP ห้าง ${s.gp||25}%`:'ค่าเช่าพื้นที่สาขา'
+        });
+        txs.push({
+          date:dt,periodKey:mKey,mIdx,brand:s.brand,model:s.m,subId:s.id,subLoc:s.n,
+          type:'Expense',costType:'Direct Expense',category:'ค่าจ้างพนักงานและ Part-time',
+          amount:Math.round(dirTotal*staffShare),prevAmount:Math.round(prevDirTotal*staffShare),
+          note:'ค่าแรงพนักงานหน้าร้านและ OT'
+        });
+        txs.push({
+          date:dt,periodKey:mKey,mIdx,brand:s.brand,model:s.m,subId:s.id,subLoc:s.n,
+          type:'Expense',costType:'Direct Expense',category:chosenOther,
+          amount:Math.round(dirTotal*otherShare),prevAmount:Math.round(prevDirTotal*otherShare),
+          note:'ค่าใช้จ่ายดำเนินงานทางตรงสาขา/บูธ'
+        });
+      });
+    });
+  });
+  RAW_TX=txs;
+}
+generateDemoTransactions();
+
+// ============================================================================
+// 3. APPLICATION STATE
+// ============================================================================
+const S={
+  gran:'month', // 'month' | 'week' | 'day'
+  from:'2025-11-01',
+  to:'2026-10-31',
+  brands:new Set(BRANDS.map(b=>b[0])),
+  models:new Set(MODELS.map(m=>m[0])),
+  subs:new Set(SUBLOCS.map(s=>s.n)),
+  dnMode:'model', // 'model' | 'brand'
+  meMode:'prod',  // 'prod' | 'sub'
+  sk:'cm',sd:-1,
+  tk:'date',td:-1,pg:0
+};
+
+$('#d-from').value=S.from;
+$('#d-to').value=S.to;
+
+// Helper for sparkline SVG
+const sp=(v,c)=>{
+  if(!v||v.length<2)return'';
+  const a=Math.min(...v),b=Math.max(...v),rng=(b-a)||1;
+  const pts=v.map((x,i)=>(i*96/(v.length-1)+2).toFixed(1)+','+(26-(x-a)/rng*22).toFixed(1)).join(' ');
+  return`<svg viewBox="0 0 100 30" width="88" height="28" aria-hidden="true"><polyline fill="none" style="stroke:${c}" stroke-width="2.2" stroke-linecap="round" points="${pts}"/></svg>`;
+};
+
+// ============================================================================
+// 4. CORE RENDER ENGINE
+// ============================================================================
+function getAllSubNames(){
+  const names=new Set(SUBLOCS.map(s=>s.n));
+  RAW_TX.forEach(t=>{if(t.subLoc)names.add(t.subLoc)});
+  return Array.from(names);
+}
+
+function getSubMeta(subName){
+  const found=SUBLOCS.find(s=>s.n===subName);
+  if(found)return found;
+  const sample=RAW_TX.find(t=>t.subLoc===subName);
+  return {
+    id:subName,n:subName,
+    brand:sample?sample.brand:'Baobei',
+    m:sample?sample.model:'สาขา (Branch)',
+    fix:15
+  };
+}
+
+function render(){
+  const cmp=$('#cmp').checked;
+  const simP=+$('#sim-p').value||0;
+  const simC=+$('#sim-c').value||0;
+  const simO=+$('#sim-o').value||0;
+  $('#lbl-sim-p').textContent=(simP>=0?'+':'')+simP+'%';
+  $('#lbl-sim-c').textContent=(simC>=0?'−':'+')+Math.abs(simC).toFixed(1)+' pt';
+  $('#lbl-sim-o').textContent=(simO>=0?'−':'+')+Math.abs(simO)+'%';
+
+  // Render Filter Chips
+  $$('#f-gran .chip').forEach(b=>b.classList.toggle('on',b.dataset.v===S.gran));
+  $('#f-brand').innerHTML=BRANDS.map(([k,n,c])=>`<button class="chip${S.brands.has(k)?' on':''}" data-a="b" data-v="${k}"><i class="dot" style="background:${c}"></i>${n}</button>`).join('');
+  $('#f-model').innerHTML=MODELS.map(([k,n,c])=>`<button class="chip${S.models.has(k)?' on':''}" data-a="m" data-v="${k}"><i class="dot" style="background:${c}"></i>${n}</button>`).join('');
+
+  // Dynamic Sublocations matching selected Brands & Models
+  const allSubMeta=getAllSubNames().map(getSubMeta);
+  const visibleSubs=allSubMeta.filter(s=>S.brands.has(s.brand)&&S.models.has(s.m));
+  $('#f-sub').innerHTML=visibleSubs.length
+    ? visibleSubs.map(s=>`<button class="chip${S.subs.has(s.n)?' on':''}" data-a="s" data-v="${s.n}">${s.n}</button>`).join('')
+    : '<span class="mut">กรุณาเลือกแบรนด์และโมเดลธุรกิจอย่างน้อย 1 รายการ</span>';
+
+  // Filter Transactions
+  const filteredTx=RAW_TX.filter(t=>{
+    if(t.date<S.from || t.date>S.to)return false;
+    if(!S.brands.has(t.brand))return false;
+    if(!S.models.has(t.model))return false;
+    if(!S.subs.has(t.subLoc))return false;
+    return true;
+  });
+
+  if(!filteredTx.length){
+    ['#kp','#tr','#dn','#wf','#cc','#mc','#sb','#hm','#cr','#be','#tg','#in','#tx'].forEach(k=>$(k).innerHTML='<p class="mut" style="padding:12px 0">ไม่มีรายการข้อมูลในช่วงเวลาหรือตัวกรองที่เลือก</p>');
+    return;
+  }
+
+  // Group into Time Buckets (Month / Week / Day)
+  const bucketMap=new Map();
+  filteredTx.forEach(t=>{
+    let bKey=t.date.slice(0,7),bLabel=t.date.slice(0,7);
+    if(S.gran==='month'){
+      bKey=t.date.slice(0,7);
+      const idx=M_KEYS.indexOf(bKey);
+      bLabel=idx>=0?MONTHS[idx]:bKey;
+    }else if(S.gran==='week'){
+      const dObj=new Date(t.date);
+      const day=dObj.getDay(),diff=dObj.getDate()-day+(day===0?-6:1);
+      const mon=new Date(dObj.setDate(diff)).toISOString().slice(0,10);
+      bKey=mon;
+      bLabel='สัปดาห์ '+mon.slice(5);
+    }else{
+      bKey=t.date;
+      bLabel=t.date.slice(5);
+    }
+    if(!bucketMap.has(bKey)){
+      bucketMap.set(bKey,{key:bKey,label:bLabel,r:0,c:0,d:0,h:0,pr:0,pc:0,pd:0,ph:0});
+    }
+    const b=bucketMap.get(bKey);
+    const prev=t.prevAmount||(t.amount*0.88);
+    if(t.type==='Revenue'){
+      b.r+=t.amount; b.pr+=prev;
+    }else if(t.costType==='COGS'||t.category.includes('COGS')){
+      b.c+=t.amount; b.pc+=prev;
+    }else if(t.costType==='Fixed Overhead'||t.model==='ส่วนกลาง (HQ)'){
+      b.h+=t.amount; b.ph+=prev;
+    }else{
+      b.d+=t.amount; b.pd+=prev;
+    }
+  });
+
+  const buckets=Array.from(bucketMap.values()).sort((a,b)=>a.key.localeCompare(b.key));
+  buckets.forEach(b=>{
+    b.gp=b.r-b.c;
+    b.cm=b.gp-b.d;
+    b.n=b.cm-b.h;
+    b.p_gp=b.pr-b.pc;
+    b.p_cm=b.p_gp-b.pd;
+    b.pn=b.p_cm-b.ph;
+  });
+
+  // Grand Totals (7-Tier Executive P&L)
+  const T=buckets.reduce((acc,b)=>{
+    acc.r+=b.r; acc.c+=b.c; acc.d+=b.d; acc.h+=b.h;
+    acc.gp+=b.gp; acc.cm+=b.cm; acc.n+=b.n;
+    acc.pr+=b.pr; acc.pc+=b.pc; acc.pd+=b.pd; acc.ph+=b.ph; acc.pn+=b.pn;
+    return acc;
+  },{r:0,c:0,d:0,h:0,gp:0,cm:0,n:0,pr:0,pc:0,pd:0,ph:0,pn:0});
+
+  const cogsPct=T.r?T.c/T.r*100:0;
+  const gpPct=T.r?T.gp/T.r*100:0;
+  const dirPct=T.r?T.d/T.r*100:0;
+  const cmPct=T.r?T.cm/T.r*100:0;
+  const hqPct=T.r?T.h/T.r*100:0;
+  const netPct=T.r?T.n/T.r*100:0;
+
+  const pCogsPct=T.pr?T.pc/T.pr*100:0;
+  const pCmPct=T.pr?(T.pr-T.pc-T.pd)/T.pr*100:0;
+  const pNetPct=T.pr?T.pn/T.pr*100:0;
+
+  const dd=(v,good,u)=>cmp?`<span class="dl ${good?'up':'dn'}">${v>=0?'▲':'▼'} ${Math.abs(v).toFixed(1)}${u} vs ปีก่อน</span>`:'';
+  const gr=dl(T.r,T.pr), gd=dl(T.d,T.pd);
+
+  // 1. Render 5 Executive KPI Cards
+  const K=[
+    ['1. รายได้รวม · TOTAL REVENUE',fm(T.r),`Gross Profit ${fm(T.gp)} (${pt(gpPct)})`,dd(gr,gr>=0,'%'),'var(--pri)',buckets.map(b=>b.r)],
+    ['2. ต้นทุนวัตถุดิบ · COGS',fm(T.c),`${pt(cogsPct)} ของรายรับรวม`,dd(cogsPct-pCogsPct,cogsPct<=pCogsPct,' pt'),'var(--cost)',buckets.map(b=>b.c)],
+    ['3. ค่าใช้จ่ายทางตรง · DIRECT EXP',fm(T.d),`${pt(dirPct)} ของรายรับ (เช่า/GP/แรงงาน)`,dd(gd,gd<=gr,'%'),'var(--opx)',buckets.map(b=>b.d)],
+    ['4. กำไรส่วนสนับสนุน · CONTRIBUTION',fm(T.cm),`Contribution Margin ${pt(cmPct)}`,dd(cmPct-pCmPct,cmPct>=pCmPct,' pt'),'var(--cm)',buckets.map(b=>b.cm)],
+    ['5. กำไรสุทธิ · NET PROFIT (หลังหัก HQ)',fm(T.n),`Net Margin ${pt(netPct)} (HQ ${fm(T.h)})`,dd(netPct-pNetPct,netPct>=pNetPct,' pt'),'var(--net)',buckets.map(b=>b.n)]
+  ];
+  $('#kp').innerHTML=K.map(k=>`
+    <div class="card" style="border-top:4px solid ${k[4]}">
+      <div class="lbl">${k[0]}</div>
+      <div class="kv"><b style="color:${k[4]}">${k[1]}</b>${sp(k[5],k[4])}</div>
+      <div class="mut">${k[2]}</div>
+      <div style="margin-top:4px">${k[3]}</div>
+    </div>
+  `).join('');
+
+  // 2. Render Main Trend Chart (Supports Month / Week / Day)
+  const granLabel=S.gran==='month'?'รายเดือน':S.gran==='week'?'รายสัปดาห์':'รายวัน';
+  $('#tr-title').textContent=`แนวโน้ม${granLabel} (${buckets.length} ช่วงเวลา): รายรับ vs ต้นทุนรวม และ Net Margin (%)`;
+  renderTrendChart(buckets,cmp);
+
+  // 3. Render Donut (By Model or By Brand)
+  renderDonut(filteredTx,T.r);
+
+  // 4. Render 7-Step Executive P&L Waterfall
+  renderWaterfall(T);
+
+  // 5. Render 11-Category Cost Composition
+  renderCostComposition(filteredTx,T);
+
+  // 6. Render Model Comparison Summary Cards
+  renderModelComparison(filteredTx,T.r);
+
+  // 7. Render Sublocation Table
+  const subRows=renderSublocationTable(filteredTx,T);
+
+  // 8. Render Event_Master GP% & ROI Analyzer
+  renderEventTable(filteredTx);
+
+  // 9. Render Heatmap
+  renderHeatmap(filteredTx);
+
+  // 10. Render Portfolio & Menu Engineering Matrix
+  $('#me').innerHTML=renderMenuEngineering(subRows);
+
+  // 11. Render Cost Ratio Trend vs Target
+  renderCostRatioChart(buckets);
+
+  // 12. Render What-If Simulator, Targets & Break-Even
+  renderTargetsAndBreakEven(T,buckets.length,subRows,simP,simC,simO,cmp,gr,gd);
+
+  // 13. Render Transactions Table
+  renderTransactionsTable(filteredTx);
+}
+
+// ============================================================================
+// 5. CHART & SECTION RENDERERS
+// ============================================================================
+function renderTrendChart(buckets,cmp){
+  const nb=buckets.length;
+  const W=800,l=52,w=(W-l-44)/Math.max(1,nb),bw=Math.max(2,Math.min(20,w*0.35));
+  const maxVal=Math.max(...buckets.map(b=>Math.max(b.r,b.c+b.d+b.h,b.pr)),1e4);
+  const top=Math.ceil(maxVal/1e5)*1e5||1e5;
+  const Y=v=>230-Math.max(0,v)/top*205;
+  let s=`<svg viewBox="0 0 ${W} 272" width="100%" role="img" aria-label="กราฟแนวโน้มรายรับ ต้นทุน และอัตรากำไร">`;
+  for(let g=0;g<=4;g++){
+    const y=Y(top*g/4);
+    s+=`<line x1="${l}" x2="${W-40}" y1="${y}" y2="${y}" style="stroke:var(--line)"/>
+        <text class="t" x="${l-6}" y="${y+4}" text-anchor="end">${fm(top*g/4)}</text>`;
+  }
+  [0,25,50].forEach(p=>{
+    s+=`<text class="t" x="${W-34}" y="${230-p/50*205+4}">${p}%</text>`;
+  });
+  const pts=[],pv=[];
+  const labelStep=nb>24?Math.ceil(nb/12):nb>14?2:1;
+  buckets.forEach((b,j)=>{
+    const x=l+j*w+w/2;
+    const totCost=b.c+b.d+b.h;
+    const mg=b.r?b.n/b.r*100:0;
+    const cmPct=b.r?b.cm/b.r*100:0;
+    pts.push(x.toFixed(1)+','+(230-Math.max(-10,Math.min(55,mg))/50*205).toFixed(1));
+    pv.push(x.toFixed(1)+','+Y(b.pr).toFixed(1));
+    s+=`<rect x="${(x-bw-0.5).toFixed(1)}" y="${Y(b.r)}" width="${bw}" height="${Math.max(1,230-Y(b.r))}" rx="2" style="fill:var(--pri)"/>`;
+    s+=`<rect x="${(x+0.5).toFixed(1)}" y="${Y(totCost)}" width="${bw}" height="${Math.max(1,230-Y(totCost))}" rx="2" style="fill:var(--cost)"/>`;
+    if(j%labelStep===0){
+      s+=`<text class="t" x="${x}" y="252" text-anchor="middle">${b.label}</text>`;
+    }
+    s+=`<rect x="${x-w/2}" y="10" width="${w}" height="235" fill="transparent" data-tip="<b>${b.label}</b><br>รายรับ: ${fmFull(b.r)}<br>COGS: ${fmFull(b.c)}<br>Direct Exp: ${fmFull(b.d)}<br>Contribution: ${fmFull(b.cm)} (${pt(cmPct)})<br>กำไรสุทธิ: <b>${fmFull(b.n)} (${pt(mg)})</b>${cmp?'<br>ปีก่อน: '+fmFull(b.pr)+' ('+(dl(b.r,b.pr)>=0?'+':'')+dl(b.r,b.pr).toFixed(1)+'%)':''}"/>`;
+  });
+  if(cmp && nb>1)s+=`<polyline fill="none" style="stroke:var(--pri)" stroke-dasharray="5 4" stroke-width="1.8" points="${pv.join(' ')}" pointer-events="none"/>`;
+  if(nb>1)s+=`<polyline fill="none" style="stroke:var(--net)" stroke-width="2.4" points="${pts.join(' ')}" pointer-events="none"/>`;
+  s+=`</svg>`+(cmp?'<div class="mut">เส้นประสีเขียว = รายรับช่วงเวลาเดียวกันของปีก่อน · เส้นทึบสีม่วง = Net Margin (%)</div>':'');
+  $('#tr').innerHTML=s;
+}
+
+function renderDonut(filteredTx,totalRev){
+  $('#dn-m').classList.toggle('on',S.dnMode==='model');
+  $('#dn-b').classList.toggle('on',S.dnMode==='brand');
+  const groups=S.dnMode==='model'?MODELS:BRANDS;
+  const by=groups.map(([k,n,c])=>{
+    const subTx=filteredTx.filter(t=>(S.dnMode==='model'?t.model:t.brand)===k);
+    const r=sum(subTx.filter(t=>t.type==='Revenue'),t=>t.amount);
+    const cost=sum(subTx.filter(t=>t.type==='Expense'),t=>t.amount);
+    return{k,n,c,r,cost,mg:r?(r-cost)/r*100:0};
+  }).filter(x=>x.r>0);
+
+  const R=62,C=2*Math.PI*R;
+  let off=0;
+  let s=`<svg viewBox="0 0 180 180" width="168" role="img" aria-label="สัดส่วนรายรับ"><g transform="rotate(-90 90 90)">`;
+  by.forEach(x=>{
+    const p=totalRev?x.r/totalRev:0,l=C*p;
+    s+=`<circle cx="90" cy="90" r="${R}" fill="none" style="stroke:${x.c}" stroke-width="26" stroke-dasharray="${Math.max(l-1.5,0).toFixed(1)} ${(C-l+1.5).toFixed(1)}" stroke-dashoffset="${(-off).toFixed(1)}" data-tip="<b>${x.n}</b><br>รายรับ: ${fmFull(x.r)} (${pt(p*100)})<br>ต้นทุนรวม: ${fmFull(x.cost)}<br>กำไร: ${fmFull(x.r-x.cost)} (Margin ${pt(x.mg)})"/>`;
+    off+=l;
+  });
+  s+=`</g><text class="t" x="90" y="84" text-anchor="middle">รายรับรวม</text><text x="90" y="106" text-anchor="middle" font-size="18" font-weight="700" style="fill:var(--ink)">${fm(totalRev)}</text></svg>`;
+  s+=`<div class="leg">`+by.map(x=>`
+    <div>
+      <i class="dot" style="background:${x.c}"></i>
+      <span class="grow">${x.n}</span>
+      <b>${pt(totalRev?x.r/totalRev*100:0)}</b>
+      <span class="mut" style="width:95px;text-align:right">Margin ${pt(x.mg)}</span>
+    </div>
+  `).join('')+`</div>`;
+  $('#dn').innerHTML=s;
+}
+
+function renderWaterfall(T){
+  // 7 steps matching Summary_PL.csv
+  const st=[
+    ['1. รายได้รวม',T.r,0,'var(--pri)'],
+    ['2. หัก COGS',-T.c,T.r,'var(--cost)'],
+    ['3. กำไรขั้นต้น',T.gp,0,'var(--pri)'],
+    ['4. หัก Direct Exp',-T.d,T.gp,'var(--opx)'],
+    ['5. Contribution',T.cm,0,'var(--cm)'],
+    ['6. หัก HQ Overhead',-T.h,T.cm,'var(--hq)'],
+    ['7. กำไรสุทธิ',T.n,0,'var(--net)']
+  ];
+  const k=185/Math.max(T.r,1);
+  let s=`<svg viewBox="0 0 640 270" width="100%" role="img" aria-label="Waterfall 7 ขั้นตอน">`;
+  st.forEach(([n,v,b,c],i)=>{
+    const x=14+i*88,h=Math.abs(v)*k;
+    const y=v>=0&&!b?228-h:228-b*k;
+    const pctRev=T.r?Math.abs(v)/T.r*100:0;
+    s+=`<rect x="${x}" y="${Math.min(227,Math.max(18,y)).toFixed(0)}" width="68" height="${Math.max(h,2).toFixed(0)}" rx="4" style="fill:${c}" data-tip="<b>${n}</b><br>${fmFull(v)}<br>สัดส่วน ${pt(pctRev)} ของรายรับรวม"/>
+        <text class="tb" x="${x+34}" y="${Math.max(14,y-6).toFixed(0)}" text-anchor="middle">${fm(v)}</text>
+        <text class="t" x="${x+34}" y="246" text-anchor="middle">${n}</text>
+        <text class="t" x="${x+34}" y="261" text-anchor="middle">${pt(pctRev)}</text>`;
+  });
+  s+=`<line x1="10" x2="630" y1="228" y2="228" style="stroke:var(--line)"/></svg>`;
+  $('#wf').innerHTML=s;
+}
+
+function renderCostComposition(filteredTx,T){
+  const expTx=filteredTx.filter(t=>t.type==='Expense');
+  const totExp=T.c+T.d+T.h||1;
+  const byCat=EXP_CATEGORIES.map(ec=>{
+    const amt=sum(expTx.filter(t=>t.category===ec.cat),t=>t.amount);
+    return{...ec,amt,pctExp:amt/totExp*100,pctRev:T.r?amt/T.r*100:0};
+  }).filter(x=>x.amt>0);
+
+  const renderGroup=(title,costType,totGroup)=>{
+    const items=byCat.filter(x=>x.costType===costType);
+    if(!items.length)return'';
+    return`<div style="margin-bottom:14px">
+      <div class="row" style="justify-content:space-between;margin-bottom:4px">
+        <b>${title}</b>
+        <span class="mut"><b>${fmFull(totGroup)}</b> · ${pt(T.r?totGroup/T.r*100:0)} ของรายรับ (${pt(totGroup/totExp*100)} ของรายจ่ายรวม)</span>
+      </div>
+      <div class="stack" style="margin:6px 0">
+        ${items.map(x=>`<i style="width:${totGroup?x.amt/totGroup*100:0}%;background:${x.color}" data-tip="<b>${x.cat}</b><br>ประเภท: ${x.costType}<br>ยอดเงิน: ${fmFull(x.amt)}<br>${pt(x.pctRev)} ของรายรับรวม"></i>`).join('')}
+      </div>
+      <div class="mut" style="display:flex;flex-wrap:wrap;gap:6px 14px">
+        ${items.map(x=>`<span><i class="dot" style="background:${x.color}"></i>${x.cat}: <b>${fm(x.amt)}</b> (${pt(x.pctRev)})</span>`).join('')}
+      </div>
+    </div>`;
+  };
+
+  $('#cc').innerHTML=
+    renderGroup('1. ต้นทุนวัตถุดิบและบรรจุภัณฑ์ (COGS)','COGS',T.c)+
+    renderGroup('2. ค่าใช้จ่ายดำเนินงานทางตรง (Direct Expense 8 หมวด)','Direct Expense',T.d)+
+    renderGroup('3. ค่าใช้จ่ายคงที่ส่วนกลาง (Fixed Overhead)','Fixed Overhead',T.h);
+}
+
+function renderModelComparison(filteredTx,totalRev){
+  const cards=MODELS.filter(m=>m[0]!=='ส่วนกลาง (HQ)').map(([k,n,c])=>{
+    const mTx=filteredTx.filter(t=>t.model===k);
+    const r=sum(mTx.filter(t=>t.type==='Revenue'),t=>t.amount);
+    const cogs=sum(mTx.filter(t=>t.costType==='COGS'),t=>t.amount);
+    const dir=sum(mTx.filter(t=>t.costType==='Direct Expense'),t=>t.amount);
+    const cm=r-cogs-dir;
+    const revShare=totalRev?r/totalRev*100:0;
+    const cmPct=r?cm/r*100:0;
+    const cogsPct=r?cogs/r*100:0;
+    const dirPct=r?dir/r*100:0;
+    return`
+      <div class="card" style="padding:14px 16px;border-left:4px solid ${c}">
+        <div class="row" style="justify-content:space-between">
+          <b>${n}</b>
+          <span class="pill ok">สัดส่วนรายรับ ${pt(revShare)}</span>
+        </div>
+        <div class="kv" style="margin:6px 0"><b style="font-size:22px;color:${c}">${fmFull(r)}</b></div>
+        <div class="stack" style="margin:6px 0">
+          <i style="width:${cogsPct}%;background:var(--cost)" data-tip="COGS: ${fmFull(cogs)} (${pt(cogsPct)})"></i>
+          <i style="width:${dirPct}%;background:var(--opx)" data-tip="Direct Exp: ${fmFull(dir)} (${pt(dirPct)})"></i>
+          <i style="width:${Math.max(0,cmPct)}%;background:var(--pri)" data-tip="Contribution Margin: ${fmFull(cm)} (${pt(cmPct)})"></i>
+        </div>
+        <div class="mut" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px">
+          <span>COGS: <b>${pt(cogsPct)}</b></span>
+          <span>Direct Exp: <b>${pt(dirPct)}</b></span>
+          <span>Contribution: <b>${fm(cm)}</b></span>
+          <span>CM Margin: <b class="${cmPct>=35?'up':'dn'}">${pt(cmPct)}</b></span>
+        </div>
+      </div>
+    `;
+  });
+  $('#mc').innerHTML=cards.join('');
+}
+
+function renderSublocationTable(filteredTx,T){
+  const tm=+$('#tm').value||22;
+  const activeSubs=Array.from(new Set(filteredTx.map(t=>t.subLoc))).filter(Boolean);
+  const rows=activeSubs.map(subName=>{
+    const meta=getSubMeta(subName);
+    const sTx=filteredTx.filter(t=>t.subLoc===subName);
+    const r=sum(sTx.filter(t=>t.type==='Revenue'),t=>t.amount);
+    const pr=sum(sTx.filter(t=>t.type==='Revenue'),t=>t.prevAmount||t.amount*0.88);
+    const c=sum(sTx.filter(t=>t.costType==='COGS'),t=>t.amount);
+    const d=sum(sTx.filter(t=>t.costType==='Direct Expense'),t=>t.amount);
+    const hDirect=sum(sTx.filter(t=>t.costType==='Fixed Overhead'),t=>t.amount);
+    // Allocate HQ overhead proportionally by revenue share for non-HQ units
+    const hAlloc=meta.m==='ส่วนกลาง (HQ)'?hDirect:(T.r?T.h*(r/T.r):0);
+    const gp=r-c;
+    const cm=gp-d;
+    const n=meta.m==='ส่วนกลาง (HQ)'?-hDirect:(cm-hAlloc);
+    return{
+      s:meta,r,c,d,gp,cm,hAlloc,n,
+      cg:r?c/r*100:0,
+      dg:r?d/r*100:0,
+      cmg:r?cm/r*100:0,
+      mg:r?n/r*100:0,
+      g:dl(r,pr)
+    };
+  });
+
+  rows.sort((a,b)=>(a[S.sk]-b[S.sk])*S.sd);
+  const H=(k,t,c)=>`<th class="${c||''}"><button data-a="sort" data-v="${k}">${t}${S.sk===k?(S.sd<0?' ↓':' ↑'):''}</button></th>`;
+  $('#sb').innerHTML=`<table>
+    <thead>
+      <tr>
+        <th>Sublocation / สาขา / อีเวนต์</th>
+        <th>แบรนด์</th>
+        <th>โมเดล</th>
+        ${H('r','รายรับ (Revenue)','num')}
+        ${H('cg','COGS %','num')}
+        ${H('dg','Direct Exp %','num')}
+        ${H('cm','Contribution (฿)','num')}
+        ${H('cmg','CM %','num')}
+        ${H('n','กำไรสุทธิ (รวมปันส่วน HQ)','num')}
+        ${H('mg','Net Margin %','')}
+        ${H('g','YoY %','num')}
+      </tr>
+    </thead>
+    <tbody>
+      ${rows.map(x=>{
+        const bColor=(BRAND_MAP[x.s.brand]||['','','#64748B'])[2];
+        const isHQ=x.s.m==='ส่วนกลาง (HQ)';
+        return`<tr>
+          <td><b>${x.s.n}</b></td>
+          <td><span class="dot" style="background:${bColor}"></span>${x.s.brand}</td>
+          <td>${x.s.m}</td>
+          <td class="num">${isHQ?'—':fmFull(x.r)}</td>
+          <td class="num">${isHQ?'—':pt(x.cg)}</td>
+          <td class="num">${isHQ?'—':pt(x.dg)}</td>
+          <td class="num"><b>${isHQ?'—':fmFull(x.cm)}</b></td>
+          <td class="num ${x.cmg>=40?'up':''}">${isHQ?'—':pt(x.cmg)}</td>
+          <td class="num"><b class="${x.n>=0?'up':'dn'}">${fmFull(x.n)}</b></td>
+          <td style="min-width:165px">
+            ${isHQ?`<span class="pill">ต้นทุนส่วนกลาง ${fm(x.hAlloc)}</span>`:`
+              <div class="row" style="gap:6px;flex-wrap:nowrap">
+                <div class="stack" style="flex:1"><i style="width:${Math.min(100,Math.max(0,x.mg)*2.5)}%;background:${x.mg>=tm?'var(--pri)':'var(--cost)'}"></i></div>
+                <b>${pt(x.mg)}</b>
+                ${x.mg<tm?'<span class="pill">ต่ำกว่าเป้า</span>':'<span class="pill ok">ดีเยี่ยม</span>'}
+              </div>
+            `}
+          </td>
+          <td class="num ${x.g>=0?'up':'dn'}">${isHQ?'—':(x.g>=0?'+':'')+x.g.toFixed(1)+'%'}</td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table>`;
+  return rows;
+}
+
+function renderEventTable(filteredTx){
+  const html=`<table>
+    <thead>
+      <tr>
+        <th>รหัสอีเวนต์</th>
+        <th>ชื่องานอีเวนต์ (Event_Name)</th>
+        <th>แบรนด์</th>
+        <th>ช่วงวันจัดงาน</th>
+        <th class="num">จำนวนวัน</th>
+        <th class="num">ค่า GP ห้าง (%)</th>
+        <th class="num">ยอดขายรวม</th>
+        <th class="num">ยอดขายเฉลี่ย/วัน</th>
+        <th class="num">ค่า GP ห้าง (฿)</th>
+        <th class="num">Contribution กำไร</th>
+        <th>ข้อเสนอแนะเชิงกลยุทธ์ปีถัดไป</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${EVENT_LIST.map(ev=>{
+        const evTx=RAW_TX.filter(t=>t.subLoc===ev.subLoc && t.brand===ev.brand);
+        const rev=sum(evTx.filter(t=>t.type==='Revenue'),t=>t.amount)||185000;
+        const cogs=sum(evTx.filter(t=>t.costType==='COGS'),t=>t.amount)||Math.round(rev*0.34);
+        const gpFee=Math.round(rev*(ev.gpPct/100)) + (ev.fixedRent||0);
+        const staffAndOther=Math.round(rev*0.11);
+        const cm=rev-cogs-gpFee-staffAndOther;
+        const cmPct=rev?cm/rev*100:0;
+        const dailyRev=rev/Math.max(1,ev.days||14);
+        const rec=cmPct>=22
+          ?'<span class="pill ok">★ จองพื้นที่ซ้ำปีหน้า (ROI สูง)</span>'
+          :ev.gpPct>=28
+            ?'<span class="pill bad">! ต่อรองลด GP ห้าง หรือปรับเซ็ตเมนูพรีเมียม</span>'
+            :'<span class="pill">ควบคุมค่าแรง Part-time & ของเสีย</span>';
+        return`<tr>
+          <td><code>${ev.id}</code></td>
+          <td><b>${ev.name}</b></td>
+          <td>${ev.brand}</td>
+          <td class="mut">${ev.start} → ${ev.end}</td>
+          <td class="num">${ev.days||14} วัน</td>
+          <td class="num"><b class="${ev.gpPct>=26?'dn':''}">${ev.gpPct.toFixed(1)}%</b></td>
+          <td class="num"><b>${fmFull(rev)}</b></td>
+          <td class="num">${fmFull(dailyRev)}/วัน</td>
+          <td class="num dn">${fmFull(gpFee)}</td>
+          <td class="num"><b class="${cmPct>=20?'up':'dn'}">${fmFull(cm)} (${pt(cmPct)})</b></td>
+          <td>${rec}</td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table>`;
+  $('#ev-tbl').innerHTML=html;
+}
+
+function renderHeatmap(filteredTx){
+  const nonHqSubs=SUBLOCS.filter(s=>s.m!=='ส่วนกลาง (HQ)' && S.brands.has(s.brand) && S.models.has(s.m) && S.subs.has(s.n));
+  if(!nonHqSubs.length){$('#hm').innerHTML='<p class="mut">ไม่มี Sublocation สำหรับแสดง Heatmap</p>';return;}
+  let html=`<div class="hm" style="grid-template-columns:210px repeat(${M_KEYS.length},1fr)"><span>Sublocation \\ เดือน</span>${MONTHS.map(m=>`<em>${m}</em>`).join('')}`;
+  nonHqSubs.forEach(s=>{
+    html+=`<b style="font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.n}</b>`;
+    M_KEYS.forEach((mk,i)=>{
+      const cellTx=RAW_TX.filter(t=>t.subLoc===s.n && t.periodKey===mk);
+      const r=sum(cellTx.filter(t=>t.type==='Revenue'),t=>t.amount);
+      const c=sum(cellTx.filter(t=>t.costType==='COGS'),t=>t.amount);
+      const d=sum(cellTx.filter(t=>t.costType==='Direct Expense'),t=>t.amount);
+      const cmPct=r?(r-c-d)/r*100:0;
+      const alpha=Math.min(1,Math.max(0,(cmPct-15)/35));
+      html+=`<span style="background:color-mix(in srgb,var(--pri) ${Math.round(10+alpha*50)}%,var(--card))" data-tip="<b>${s.n} · ${MONTHS[i]}</b><br>รายรับ: ${fmFull(r)}<br>Contribution Margin: <b>${pt(cmPct)}</b> (${fmFull(r-c-d)})">${cmPct.toFixed(0)}%</span>`;
+    });
+  });
+  html+=`</div>`;
+  $('#hm').innerHTML=html;
+}
+
+function renderMenuEngineering(subRows){
+  $('#me-p').classList.toggle('on',S.meMode==='prod');
+  $('#me-s').classList.toggle('on',S.meMode==='sub');
+
+  if(S.meMode==='sub'){
+    const valid=subRows.filter(r=>r.r>0);
+    if(!valid.length)return'<p class="mut">ไม่มีข้อมูล Sublocation</p>';
+    const ax=sum(valid,x=>x.r)/valid.length;
+    const ay=sum(valid,x=>x.cmg)/valid.length;
+    const maxR=Math.max(...valid.map(x=>x.r),1)*1.15;
+    const X=v=>45+v/maxR*490, Y=v=>265-Math.max(0,Math.min(60,v))/60*245;
+    let s=`<svg viewBox="0 0 560 300" width="100%" role="img" aria-label="Portfolio Matrix ราย Sublocation">
+      <line x1="${X(ax)}" x2="${X(ax)}" y1="15" y2="265" stroke-dasharray="4 4" style="stroke:var(--line)"/>
+      <line x1="45" x2="545" y1="${Y(ay)}" y2="${Y(ay)}" stroke-dasharray="4 4" style="stroke:var(--line)"/>
+      <text class="t" x="50" y="28">Puzzles · Margin สูง ยอดยังน้อย (อัดการตลาด)</text>
+      <text class="t" x="540" y="28" text-anchor="end">Stars · ยอดขายสูง กำไรดี (ขยายโมเดลนี้)</text>
+      <text class="t" x="50" y="258">Dogs · ทบทวนค่าเช่า/GP ห้าง</text>
+      <text class="t" x="540" y="258" text-anchor="end">Workhorses · ขายดีแต่ต้นทุนตึง (ลด COGS/GP)</text>`;
+    valid.forEach(x=>{
+      const hi=x.r>=ax, hm=x.cmg>=ay;
+      const c=hi&&hm?'var(--pri)':hm?'var(--net)':hi?'var(--cost)':'var(--opx)';
+      s+=`<circle cx="${X(x.r)}" cy="${Y(x.cmg)}" r="8" style="fill:${c}" data-tip="<b>${x.s.n} (${x.s.brand})</b><br>รายรับ: ${fmFull(x.r)}<br>Contribution Margin: ${pt(x.cmg)}"/><text class="t" x="${X(x.r)+10}" y="${Y(x.cmg)+4}">${x.s.n.replace('สาขา','').replace('Event ','')}</text>`;
+    });
+    return s+`<text class="t" x="295" y="290" text-anchor="middle">รายรับรวมตามช่วงเวลาที่เลือก (บาท) →</text></svg>`;
+  }
+
+  // Default: Product Menu Engineering across Brands
+  const it=[
+    ['ซาลาเปาหมูสับไข่เค็ม (Baobei)',5600,15,'Baobei'],
+    ['ติ่มซำฮะเก๋า & ขนมจีบกุ้ง (Baobei)',4200,24,'Baobei'],
+    ['เกี๊ยวซ่าทอดกรอบ (Skyluck)',4900,11,'Skyluck'],
+    ['ซาลาเปาไส้ครีมลาวา (Baobei)',4400,13,'Baobei'],
+    ['ขนมเปี๊ยะลาวา (Lalilla)',2600,21,'Lalilla'],
+    ['ชุดติ่มซำพรีเมียม (Seng Hong)',1900,25,'Seng Hong'],
+    ['ชุด Snack Box A (ซาลาเปาคู่)',3400,9,'Baobei'],
+    ['หมั่นโถวทอดสังขยา (Lalilla)',2100,16,'Lalilla'],
+    ['ซาลาเปาหมูแดงฮ่องกง (Baobei)',3100,14,'Baobei']
+  ];
+  const ax=sum(it,x=>x[1])/it.length, ay=sum(it,x=>x[2])/it.length;
+  const X=v=>45+v/6200*490, Y=v=>265-v/28*245;
+  let s=`<svg viewBox="0 0 560 300" width="100%" role="img" aria-label="Menu engineering ยอดขาย vs กำไรต่อชิ้น">
+    <line x1="${X(ax)}" x2="${X(ax)}" y1="15" y2="265" stroke-dasharray="4 4" style="stroke:var(--line)"/>
+    <line x1="45" x2="545" y1="${Y(ay)}" y2="${Y(ay)}" stroke-dasharray="4 4" style="stroke:var(--line)"/>
+    <text class="t" x="50" y="28">Puzzles · กำไร/ชิ้นสูง ขายน้อย (จัดเซ็ตคู่)</text>
+    <text class="t" x="540" y="28" text-anchor="end">Stars · เมนูทำเงินหลัก (ดันขึ้นป้ายบูธ Event)</text>
+    <text class="t" x="50" y="258">Dogs · ทบทวนสูตร/ตัดออก</text>
+    <text class="t" x="540" y="258" text-anchor="end">Workhorses · ขายดีมาก (ขยับราคา/ลดต้นทุนแพ็กเกจ)</text>`;
+  it.forEach(([n,u,m,br])=>{
+    const hi=u>=ax, hm=m>=ay;
+    const c=hi&&hm?'var(--pri)':hm?'var(--net)':hi?'var(--cost)':'var(--opx)';
+    s+=`<circle cx="${X(u)}" cy="${Y(m)}" r="8" style="fill:${c}" data-tip="<b>${n}</b><br>แบรนด์: ${br}<br>ยอดขายเฉลี่ย: ${th(u)} ชิ้น/เดือน<br>กำไรขั้นต้น: ฿${m}/ชิ้น"/><text class="t" x="${X(u)+10}" y="${Y(m)+4}">${n.split(' (')[0]}</text>`;
+  });
+  return s+`<text class="t" x="295" y="290" text-anchor="middle">ปริมาณยอดขายเฉลี่ย (ชิ้น/เดือน) →</text></svg>`;
+}
+
+function renderCostRatioChart(buckets){
+  const nb=buckets.length;
+  const tc=+$('#tc').value||35;
+  const W=560,l=40,w=(W-l-12)/Math.max(1,nb),Y=v=>230-Math.min(65,Math.max(0,v))/60*205;
+  let s=`<svg viewBox="0 0 ${W} 265" width="100%" role="img" aria-label="สัดส่วนต้นทุนต่อรายรับ">`;
+  [0,20,40,60].forEach(v=>{
+    s+=`<line x1="${l}" x2="${W-8}" y1="${Y(v)}" y2="${Y(v)}" style="stroke:var(--line)"/>
+        <text class="t" x="${l-6}" y="${Y(v)+4}" text-anchor="end">${v}%</text>`;
+  });
+  const ln=(f,c)=>nb>1?`<polyline fill="none" style="stroke:${c}" stroke-width="2.4" points="${buckets.map((b,j)=>(l+j*w+w/2).toFixed(1)+','+Y(b.r?f(b)/b.r*100:0).toFixed(1)).join(' ')}"/>`:'';
+  s+=`<line x1="${l}" x2="${W-8}" y1="${Y(tc)}" y2="${Y(tc)}" stroke-dasharray="5 4" style="stroke:var(--cost)"/>
+      <text class="t" x="${W-10}" y="${Y(tc)-5}" text-anchor="end">เพดาน COGS ${tc}%</text>`
+      +ln(b=>b.c,'var(--cost)')+ln(b=>b.d,'var(--opx)')+ln(b=>b.h,'var(--hq)');
+  const step=nb>16?Math.ceil(nb/8):1;
+  buckets.forEach((b,j)=>{
+    const x=l+j*w;
+    if(j%step===0)s+=`<text class="t" x="${x+w/2}" y="250" text-anchor="middle">${b.label}</text>`;
+    s+=`<rect x="${x}" y="10" width="${w}" height="230" fill="transparent" data-tip="<b>${b.label}</b><br>COGS: ${pt(b.r?b.c/b.r*100:0)}<br>Direct Exp: ${pt(b.r?b.d/b.r*100:0)}<br>Fixed HQ: ${pt(b.r?b.h/b.r*100:0)}"/>`;
+  });
+  $('#cr').innerHTML=s+'</svg>';
+}
+
+function renderTargetsAndBreakEven(T,nb,subRows,simP,simC,simO,cmp,gr,gd){
+  const tr_=+$('#tr_').value||12000000;
+  const tm=+$('#tm').value||22;
+  const tc=+$('#tc').value||35;
+
+  // Approximate number of days in selected range
+  const d1=new Date(S.from), d2=new Date(S.to);
+  const daysRange=Math.max(1,Math.round((d2-d1)/86400000)+1);
+  const proRataTarget=tr_*(daysRange/365);
+  const revProgress=proRataTarget?T.r/proRataTarget*100:0;
+
+  // Simulated Next Year P&L based on What-If Sliders
+  const simRev=T.r*(1+simP/100);
+  const curCogsRatio=T.r?T.c/T.r:0.34;
+  const simCogsRatio=Math.max(0.15,curCogsRatio - simC/100);
+  const simCogs=simRev*simCogsRatio;
+  const simDir=T.d*(1-simO/100);
+  const simHq=T.h;
+  const simNet=simRev-simCogs-simDir-simHq;
+  const simNetPct=simRev?simNet/simRev*100:0;
+  const profitLift=simNet-T.n;
+
+  const mg=T.r?T.n/T.r*100:0;
+  const cg=T.r?T.c/T.r*100:0;
+
+  $('#tg').innerHTML=`
+    <div class="row" style="justify-content:space-between">
+      <span>รายรับจริง ${fmFull(T.r)} / เป้าตามสัดส่วนวัน (${daysRange} วัน) ${fmFull(proRataTarget)}</span>
+      <b>${revProgress.toFixed(0)}%</b>
+    </div>
+    <div class="prog"><i style="width:${Math.min(100,revProgress)}%"></i></div>
+    <div class="row" style="justify-content:space-between;margin-top:8px">
+      <span>Net Margin ปัจจุบัน ${pt(mg)} / เป้าหมาย ${tm}%</span>
+      <b class="${mg>=tm?'up':'dn'}">${mg>=tm?'✓ ถึงเป้าหมาย':'ขาดอีก '+(tm-mg).toFixed(1)+' pt'}</b>
+    </div>
+    <div class="prog"><i style="width:${Math.min(100,tm?Math.max(0,mg)/tm*100:0)}%;background:var(--pri)"></i></div>
+    <div style="margin-top:10px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--pri) 10%,var(--card));border:1px solid var(--pri)">
+      <div class="row" style="justify-content:space-between">
+        <b>🚀 ผลลัพธ์จำลองกลยุทธ์ปีหน้า (Simulated Net Profit):</b>
+        <b style="font-size:18px;color:var(--pri)">${fmFull(simNet)} (${pt(simNetPct)})</b>
+      </div>
+      <div class="mut" style="margin-top:2px">
+        รายรับจำลอง ${fmFull(simRev)} · กำไรสุทธิเพิ่มขึ้น <b class="${profitLift>=0?'up':'dn'}">${profitLift>=0?'+':''}${fmFull(profitLift)}</b> จากปัจจุบัน
+      </div>
+    </div>
+  `;
+
+  // Break-even Calculation
+  // Fixed Costs = Fixed Overhead (HQ) + Fixed portion of Branch Rent/Staff (~45% of Direct Exp)
+  const fixedTotal=T.h + T.d*0.45;
+  const varCostTotal=T.c + T.d*0.55;
+  const cmRatio=T.r?(T.r-varCostTotal)/T.r:0.4;
+  const beTotal=cmRatio>0?fixedTotal/cmRatio:0;
+  const beDaily=beTotal/daysRange;
+  const avgDaily=T.r/daysRange;
+  const safetyMargin=avgDaily?(avgDaily-beDaily)/avgDaily*100:0;
+
+  $('#be').innerHTML=`
+    <div class="kv">
+      <div>
+        <div class="lbl">จุดคุ้มทุนต่อวัน (Break-Even Sales / Day)</div>
+        <b style="color:var(--net)">${fmFull(beDaily)} / วัน</b>
+      </div>
+      <div style="text-align:right">
+        <div class="lbl">ยอดขายจริงเฉลี่ยต่อวัน</div>
+        <b style="color:var(--pri)">${fmFull(avgDaily)} / วัน</b>
+      </div>
+    </div>
+    <div class="mut">ต้นทุนคงที่รวม (HQ + ค่าเช่า/แรงงานคงที่): <b>${fmFull(fixedTotal)}</b> (${fmFull(fixedTotal/(daysRange/30.4))}/เดือน) · อัตรากำไรผันแปร ${pt(cmRatio*100)}</div>
+    <div class="prog" style="margin:10px 0"><i style="width:${Math.min(100,Math.max(0,safetyMargin))}%;background:var(--pri)"></i></div>
+    <div class="row" style="justify-content:space-between">
+      <b class="${safetyMargin>=20?'up':'dn'}">ส่วนเผื่อความปลอดภัย (Margin of Safety): ${safetyMargin.toFixed(1)}%</b>
+      <span class="pill ${safetyMargin>=20?'ok':'bad'}">${safetyMargin>=20?'ความเสี่ยงต่ำ ขยายสาขา/บูธได้':'ระวังต้นทุนคงที่ตึงตัว'}</span>
+    </div>
+    <div class="mut" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)">
+      💡 <b>คำแนะนำการตั้งเกณฑ์ขั้นต่ำ:</b> ในการออกบูธ Event หรือเปิดสาขาใหม่ ต้องมียอดขายขั้นต่ำเฉลี่ย <b>${fmFull(beDaily/Math.max(1,subRows.filter(r=>r.r>0).length))}/วัน/จุดขาย</b> จึงจะครอบคลุมต้นทุนคงที่และปันส่วน HQ ได้ทั้งหมด
+    </div>
+  `;
+
+  // Strategic Insights Reflection Cards
+  const operatingRows=subRows.filter(r=>r.r>0);
+  if(!operatingRows.length)return;
+  const byCm=[...operatingRows].sort((a,b)=>b.cmg-a.cmg);
+  const best=byCm[0], worst=byCm[byCm.length-1];
+
+  const I=[
+    [
+      `🏆 หน่วยธุรกิจที่ทำกำไรสูงสุด: ${best.s.n} (CM ${pt(best.cmg)})`,
+      `ทำกำไรส่วนสนับสนุน ${fmFull(best.cm)} ขณะที่หน่วยต่ำสุดคือ ${worst.s.n} (${pt(worst.cmg)}) ห่างกัน ${(best.cmg-worst.cmg).toFixed(1)} pt`,
+      `ถอดโมเดลการจัดเซ็ตเมนูและการคุมกะพนักงานจาก ${best.s.n} ไปปรับใช้กับ ${worst.s.n} และตั้งเกณฑ์ GP ห้างไม่เกิน 25%`
+    ],
+    [
+      `🎪 กลยุทธ์การคัดเลือกงาน Event & ต่อรองค่า GP ห้าง`,
+      `งานที่มีค่า GP ห้าง 30% (เช่น Siam Paragon) แม้ยอดขายต่อวันสูงถึง ~฿15.7k/วัน แต่ถูกหักค่า GP ก้อนใหญ่ทำให้ Net Margin แคบกว่างาน GP 20%–25%`,
+      `ปีหน้าหากห้างเก็บ GP เกิน 26% ต้องใช้วิธีจัด "เซ็ตซาลาเปา+ติ่มซำพรีเมียม" เพื่อดึง Basket Size และ Gross Margin ให้สูงขึ้นชดเชย GP`
+    ],
+    [
+      `📦 โอกาสเติบโตจาก B2B (Snack Box & Catering)`,
+      `โมเดล Snack Box และ Catering ไม่เสียค่าเช่าพื้นที่และ GP ห้างรายเดือน ทำให้มี Contribution Margin สูงและใช้ครัวกลางร่วมกับสาขาได้`,
+      `จัดทีมขาย B2B เจาะออฟฟิศย่านสาทร/สีลม และงานสัมมนาในช่วง Low Season (ก.พ.–เม.ย.) เพื่อเติมเต็มกำลังการผลิตของสาขา`
+    ],
+    [
+      `🥩 การควบคุมต้นทุนวัตถุดิบ (COGS ปัจจุบัน ${pt(cg)} vs เป้า ${tc}%)`,
+      cg>tc
+        ?`COGS สูงกว่าเพดานเป้าหมาย ${(cg-tc).toFixed(1)} pt คิดเป็นเงินต้นทุนส่วนเกินราว ${fmFull((cg-tc)/100*T.r)}`
+        :`COGS คุมได้ดีต่ำกว่าเพดานเป้าหมาย ${(tc-cg).toFixed(1)} pt ช่วยประหยัดต้นทุนได้ราว ${fmFull((tc-cg)/100*T.r)}`,
+      `รวมยอดสั่งซื้อวัตถุดิบหลักของทั้ง 4 แบรนด์ (Baobei, Skyluck, Lalilla, Seng Hong) เพื่อขอส่วนลด Volume Discount จาก Supplier ปีหน้า`
+    ]
+  ];
+  if(cmp){
+    I.push([
+      `📈 Operating Leverage: รายรับโต ${gr>=0?'+':''}${gr.toFixed(1)}% vs Direct Exp ${gd>=0?'+':''}${gd.toFixed(1)}%`,
+      gd>gr?`ค่าใช้จ่ายทางตรงโตเร็วกว่ารายรับ ต้องระวังค่าเช่าและค่าแรงล่วงเวลา`:`รายรับเติบโตเร็วกว่าค่าใช้จ่าย สะท้อนการประหยัดต่อขนาด (Economies of Scale)`,
+      `ล็อกงบ Fixed Overhead ส่วนกลาง (HQ) ให้ไม่เกิน ${pt(T.r?T.h/T.r*100:0)} ของรายได้รวมเมื่อขยายสาขาเพิ่มในปีถัดไป`
+    ]);
+  }
+  $('#in').innerHTML=I.map(x=>`
+    <div class="card">
+      <div>
+        <b>${x[0]}</b>
+        <div class="mut">${x[1]}</div>
+      </div>
+      <div class="act">🎯 แนวทางกลยุทธ์ปีถัดไป: ${x[2]}</div>
+    </div>
+  `).join('');
+}
+
+function renderTransactionsTable(filteredTx){
+  const q=$('#q').value.trim().toLowerCase();
+  const ty=$('#ty').value;
+  let r=filteredTx.filter(t=>{
+    if(ty){
+      if(ty==='Revenue' && t.type!=='Revenue')return false;
+      if(ty!=='Revenue' && t.costType!==ty)return false;
+    }
+    if(q){
+      const hay=`${t.subLoc} ${t.brand} ${t.model} ${t.category} ${t.note} ${t.date}`.toLowerCase();
+      if(!hay.includes(q))return false;
+    }
+    return true;
+  });
+
+  const k=S.tk;
+  r.sort((a,b)=>(typeof a[k]==='string'?a[k].localeCompare(b[k]):a[k]-b[k])*S.td);
+  const N=r.length,P=12,mp=Math.max(0,Math.ceil(N/P)-1);
+  S.pg=Math.min(S.pg,mp);
+
+  const H=(key,label,cls)=>`<th class="${cls||''}"><button data-a="ts" data-v="${key}">${label}${S.tk===key?(S.td<0?' ↓':' ↑'):''}</button></th>`;
+  $('#tx').innerHTML=`
+    <table>
+      <thead>
+        <tr>
+          ${H('date','วันที่ (Date)')}
+          ${H('brand','แบรนด์')}
+          ${H('model','โมเดลธุรกิจ')}
+          ${H('subLoc','Sublocation')}
+          ${H('costType','ประเภท (Cost_Type)')}
+          ${H('category','หมวดหมู่ (Category)')}
+          <th>หมายเหตุ (Note)</th>
+          ${H('amount','จำนวนเงิน (บาท)','num')}
+        </tr>
+      </thead>
+      <tbody>
+        ${r.slice(S.pg*P,S.pg*P+P).map(x=>{
+          const isRev=x.type==='Revenue';
+          const badgeCls=isRev?'ok':x.costType==='COGS'?'bad':'';
+          return`<tr>
+            <td>${x.date}</td>
+            <td><b>${x.brand}</b></td>
+            <td>${x.model}</td>
+            <td>${x.subLoc}</td>
+            <td><span class="pill ${badgeCls}">${isRev?'รายรับ (Revenue)':x.costType}</span></td>
+            <td>${x.category}</td>
+            <td class="mut">${x.note||''}</td>
+            <td class="num"><b class="${isRev?'up':'dn'}">${isRev?'+':'−'}${fmFull(x.amount)}</b></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    <div class="row" style="justify-content:space-between;margin-top:12px">
+      <span class="mut">แสดงรายการที่ ${N?S.pg*P+1:0}–${Math.min(N,S.pg*P+P)} จากทั้งหมด ${th(N)} รายการ</span>
+      <span class="row">
+        <button class="btn" data-a="pg" data-v="-1"${S.pg<1?' disabled':''}>← ก่อนหน้า</button>
+        <button class="btn" data-a="pg" data-v="1"${S.pg>=mp?' disabled':''}>ถัดไป →</button>
+      </span>
+    </div>
+  `;
+}
+
+// ============================================================================
+// 6. INTERACTIVE EVENTS, GOOGLE SHEET FETCH & CSV IMPORT/EXPORT
+// ============================================================================
+$('#d-from').onchange=e=>{S.from=e.target.value;if(S.to<S.from){S.to=S.from;$('#d-to').value=S.to}render()};
+$('#d-to').onchange=e=>{S.to=e.target.value;if(S.from>S.to){S.from=S.to;$('#d-from').value=S.from}render()};
+['#cmp','#tr_','#tm','#tc','#sim-p','#sim-c','#sim-o'].forEach(k=>$(k).oninput=render);
+$('#q').oninput=$('#ty').onchange=()=>{S.pg=0;render()};
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-a]');
+  if(!b)return;
+  const a=b.dataset.a, v=b.dataset.v;
+
+  if(a==='gran'){S.gran=v}
+  else if(a==='pre'){
+    if(v==='all'){S.from='2025-11-01';S.to='2026-10-31'}
+    else if(v==='q4'){S.from='2026-08-01';S.to='2026-10-31'}
+    else if(v==='m10'){S.from='2026-10-01';S.to='2026-10-31';S.gran='day'}
+    $('#d-from').value=S.from; $('#d-to').value=S.to;
+  }
+  else if(a==='b'){
+    const on=S.brands.has(v);
+    on?S.brands.delete(v):S.brands.add(v);
+    getAllSubNames().map(getSubMeta).filter(s=>s.brand===v).forEach(s=>on?S.subs.delete(s.n):S.subs.add(s.n));
+  }
+  else if(a==='ba'){
+    BRANDS.forEach(x=>S.brands.add(x[0]));
+    getAllSubNames().map(getSubMeta).filter(s=>S.models.has(s.m)).forEach(s=>S.subs.add(s.n));
+  }
+  else if(a==='m'){
+    const on=S.models.has(v);
+    on?S.models.delete(v):S.models.add(v);
+    getAllSubNames().map(getSubMeta).filter(s=>s.m===v).forEach(s=>on?S.subs.delete(s.n):S.subs.add(s.n));
+  }
+  else if(a==='ma'){
+    MODELS.forEach(x=>S.models.add(x[0]));
+    getAllSubNames().map(getSubMeta).filter(s=>S.brands.has(s.brand)).forEach(s=>S.subs.add(s.n));
+  }
+  else if(a==='s'){S.subs.has(v)?S.subs.delete(v):S.subs.add(v)}
+  else if(a==='sa'){getAllSubNames().map(getSubMeta).filter(s=>S.brands.has(s.brand)&&S.models.has(s.m)).forEach(s=>S.subs.add(s.n))}
+  else if(a==='sn'){getAllSubNames().map(getSubMeta).filter(s=>S.brands.has(s.brand)&&S.models.has(s.m)).forEach(s=>S.subs.delete(s.n))}
+  else if(a==='dn-mode'){S.dnMode=v}
+  else if(a==='me-mode'){S.meMode=v}
+  else if(a==='reset-sim'){$('#sim-p').value=0;$('#sim-c').value=0;$('#sim-o').value=0}
+  else if(a==='sort'){S.sd=S.sk===v?-S.sd:-1;S.sk=v}
+  else if(a==='ts'){S.td=S.tk===v?-S.td:-1;S.tk=v;S.pg=0}
+  else if(a==='pg'){S.pg+=+v}
+  else if(a==='th'){
+    const r=document.documentElement;
+    const d=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;
+    r.dataset.theme=d?'light':'dark';
+    return;
+  }
+  else if(a==='open-sync'){$('#sync-modal').hidden=false;return}
+  else if(a==='close-sync'){$('#sync-modal').hidden=true;return}
+  else if(a==='copy-gas'){
+    const ta=document.createElement('textarea');
+    ta.value=$('#gas-code').textContent;
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
+    b.textContent='✓ คัดลอกโค้ดสำเร็จ!';
+    setTimeout(()=>b.textContent='คัดลอกโค้ด Apps Script',2000);
+    return;
+  }
+  else if(a==='save-gas'){
+    fetchFromGasUrl($('#gas-url').value.trim());
+    return;
+  }
+  else if(a==='reset-demo'){
+    localStorage.removeItem('paobeipao_gas_url');
+    generateDemoTransactions();
+    $('#data-badge').textContent='โหมดข้อมูลจำลองตามโครงสร้าง PaobeiPao_Master_PL';
+    $('#data-badge').classList.remove('live');
+    $('#sync-modal').hidden=true;
+    render();
+    return;
+  }
+  else if(a==='export-csv'){
+    exportFilteredCsv();
+    return;
+  }
+  render();
+});
+
+// Fetch live data from Google Apps Script Web App URL
+async function fetchFromGasUrl(url){
+  if(!url){$('#gas-status').textContent='⚠️ กรุณาวาง URL ของ Google Apps Script Web App ก่อนครับ';return;}
+  $('#gas-status').textContent='⏳ กำลังดึงข้อมูลจาก Google Sheets...';
+  try{
+    const res=await fetch(url);
+    const data=await res.json();
+    if(data.transactions && data.transactions.length){
+      RAW_TX=data.transactions.map(t=>({
+        ...t,
+        prevAmount:t.prevAmount||Math.round(t.amount*0.9)
+      }));
+      if(data.events && data.events.length)EVENT_LIST=data.events;
+      S.subs=new Set(getAllSubNames());
+      localStorage.setItem('paobeipao_gas_url',url);
+      $('#data-badge').textContent=`เชื่อมต่อข้อมูลจริงแล้ว (${RAW_TX.length} รายการ)`;
+      $('#data-badge').classList.add('live');
+      $('#gas-status').textContent='✅ ดึงข้อมูลสำเร็จเรียบร้อย!';
+      setTimeout(()=>$('#sync-modal').hidden=true,800);
+      render();
+    }else{
+      $('#gas-status').textContent='⚠️ เชื่อมต่อสำเร็จ แต่ยังไม่มีแถวข้อมูลในแท็บ Transactions';
+    }
+  }catch(err){
+    $('#gas-status').textContent='❌ ไม่สามารถดึงข้อมูลได้ กรุณาตรวจสอบว่า Deploy สิทธิ์เป็น Anyone แล้ว';
+  }
+}
+
+// Parse uploaded CSV file directly
+$('#csv-tx').addEventListener('change',e=>{
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const lines=ev.target.result.split(/\r?\n/).filter(l=>l.trim());
+    const parsed=[];
+    for(let i=1;i<lines.length;i++){
+      const cols=lines[i].split(',');
+      if(cols.length<8)continue;
+      const dt=cols[0].trim();
+      const amt=parseFloat(cols[7])||0;
+      if(!dt||!amt)continue;
+      parsed.push({
+        date:dt,
+        brand:cols[1].trim()||'Baobei',
+        model:cols[2].trim()||'สาขา (Branch)',
+        subLoc:cols[3].trim(),
+        type:cols[4].trim()||'Expense',
+        costType:cols[5].trim()||'Direct Expense',
+        category:cols[6].trim(),
+        amount:amt,
+        prevAmount:Math.round(amt*0.9),
+        note:(cols[8]||'').trim(),
+        periodKey:(cols[9]||dt.slice(0,7)).trim()
+      });
+    }
+    if(parsed.length){
+      RAW_TX=parsed;
+      S.subs=new Set(getAllSubNames());
+      $('#data-badge').textContent=`อัปโหลด CSV สำเร็จ (${RAW_TX.length} รายการ)`;
+      $('#data-badge').classList.add('live');
+      $('#sync-modal').hidden=true;
+      render();
+    }
+  };
+  reader.readAsText(file,'utf-8');
+});
+
+// Export CSV
+function exportFilteredCsv(){
+  const header='Date,Brand,BusinessModel,SubLocation,Type,Cost_Type,Category,Amount,Note,Period_Key\n';
+  const rows=RAW_TX.filter(t=>t.date>=S.from&&t.date<=S.to&&S.brands.has(t.brand)&&S.models.has(t.model)&&S.subs.has(t.subLoc))
+    .map(t=>`${t.date},"${t.brand}","${t.model}","${t.subLoc}",${t.type},"${t.costType}","${t.category}",${t.amount},"${t.note||''}",${t.periodKey}`).join('\n');
+  const blob=new Blob(["\uFEFF"+header+rows],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='PaobeiPao_Filtered_PL.csv';
+  a.click();
+}
+
+// Tooltip handler
+const tp=$('#tip');
+const showTip=e=>{
+  const t=e.target.closest('[data-tip]');
+  if(!t){tp.hidden=true;return;}
+  tp.innerHTML=t.dataset.tip;
+  tp.hidden=false;
+  tp.style.left=Math.max(8,Math.min(e.clientX+14,innerWidth-tp.offsetWidth-12))+'px';
+  tp.style.top=(e.clientY+14>innerHeight-tp.offsetHeight?e.clientY-tp.offsetHeight-10:e.clientY+14)+'px';
+};
+['mousemove','click'].forEach(v=>document.addEventListener(v,showTip));
+
+// Auto-load saved GAS URL if available
+const savedUrl=localStorage.getItem('paobeipao_gas_url');
+if(savedUrl){$('#gas-url').value=savedUrl;fetchFromGasUrl(savedUrl);}
+render();
+</script>
+</body>
+</html>
